@@ -78,6 +78,30 @@ function createTables() {
             )
         `);
 
+        // Hausaufgaben Tabelle
+        db.run(`
+            CREATE TABLE IF NOT EXISTS hausaufgaben (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                text TEXT NOT NULL,
+                fach TEXT NOT NULL,
+                fallig TEXT NOT NULL,
+                completed INTEGER DEFAULT 0,
+                erstellt TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Pomodoro Sessions Tabelle
+        db.run(`
+            CREATE TABLE IF NOT EXISTS pomodoro_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                duration INTEGER,
+                is_break INTEGER DEFAULT 0,
+                completed INTEGER DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         // Statistiken Tabelle
         db.run(`
             CREATE TABLE IF NOT EXISTS statistiken (
@@ -279,6 +303,70 @@ function getStatistics() {
     });
 }
 
+// ===== HAUSAUFGABEN FUNKTIONEN =====
+function addHausaufgabe(text, fach, fallig) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'INSERT INTO hausaufgaben (text, fach, fallig, erstellt) VALUES (?, ?, ?, ?)',
+            [text, fach, fallig, new Date().toLocaleDateString('de-DE')],
+            function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            }
+        );
+    });
+}
+
+function getHausaufgaben() {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM hausaufgaben ORDER BY fallig ASC', (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows || []);
+        });
+    });
+}
+
+function deleteHausaufgabe(id) {
+    return new Promise((resolve, reject) => {
+        db.run('DELETE FROM hausaufgaben WHERE id = ?', [id], function(err) {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
+
+function updateHausaufgabe(id, completed) {
+    return new Promise((resolve, reject) => {
+        db.run('UPDATE hausaufgaben SET completed = ? WHERE id = ?', [completed ? 1 : 0, id], function(err) {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
+
+// ===== POMODORO FUNKTIONEN =====
+function addPomodoroSession(duration, is_break) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'INSERT INTO pomodoro_sessions (duration, is_break) VALUES (?, ?)',
+            [duration, is_break ? 1 : 0],
+            function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            }
+        );
+    });
+}
+
+function getPomodoroStats() {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT COUNT(*) as total, SUM(duration) as totalTime FROM pomodoro_sessions WHERE is_break = 0', (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows[0] || { total: 0, totalTime: 0 });
+        });
+    });
+}
+
 // ===== DATENBANK EXPORT/IMPORT =====
 function exportData() {
     return new Promise((resolve, reject) => {
@@ -302,12 +390,19 @@ function exportData() {
                             reject(err);
                             return;
                         }
-                        resolve({
-                            noten,
-                            termine,
-                            notizen,
-                            fehlzeiten,
-                            exportDate: new Date().toISOString()
+                        db.all('SELECT * FROM hausaufgaben', (err, hausaufgaben) => {
+                            if (err) {
+                                reject(err);
+                                return;
+                            }
+                            resolve({
+                                noten,
+                                termine,
+                                notizen,
+                                fehlzeiten,
+                                hausaufgaben,
+                                exportDate: new Date().toISOString()
+                            });
                         });
                     });
                 });
@@ -332,5 +427,11 @@ module.exports = {
     getFehlzeiten,
     deleteFehlzeit,
     getStatistics,
-    exportData
+    exportData,
+    addHausaufgabe,
+    getHausaufgaben,
+    deleteHausaufgabe,
+    updateHausaufgabe,
+    addPomodoroSession,
+    getPomodoroStats
 };

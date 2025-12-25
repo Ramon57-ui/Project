@@ -1,8 +1,8 @@
 /* ===== VARIABLES & COLORS ===== */
 :root {
     /* Light Mode Colors - Blue & Purple Theme */
-    --bg-primary: #f0f4ff;
-    --bg-secondary: #e8ecff;
+    --bg-primary: #e8ecff;
+    --bg-secondary: #dfe7ff;
     --text-primary: #1a237e;
     --text-secondary: #5e6fa3;
     --border-color: #d6ddff;
@@ -20,8 +20,8 @@
 
 /* Dark Mode - Blue & Purple Theme */
 html.dark-mode {
-    --bg-primary: #1a1a3e;
-    --bg-secondary: #242a5f;
+    --bg-primary: #0f0f2e;
+    --bg-secondary: #1a1a4d;
     --text-primary: #e8f0ff;
     --text-secondary: #b0baff;
     --border-color: #3d4a7f;
@@ -45,7 +45,8 @@ html, body {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-secondary);
+    background: linear-gradient(135deg, #5c6bc0 0%, #7e57c2 25%, #ab47bc 50%, #7e57c2 75%, #5c6bc0 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     transition: var(--transition);
     line-height: 1.6;
@@ -217,17 +218,20 @@ main {
 
 /* ===== CARDS ===== */
 .card {
-    background-color: var(--bg-primary);
+    background: linear-gradient(135deg, rgba(224, 228, 255, 0.95) 0%, rgba(216, 222, 255, 0.95) 100%);
+    backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: var(--shadow);
+    box-shadow: 0 8px 32px rgba(92, 107, 192, 0.2);
     transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(92, 107, 192, 0.3);
+    transform: translateY(-4px);
+    background: linear-gradient(135deg, rgba(232, 236, 255, 0.98) 0%, rgba(224, 230, 255, 0.98) 100%);
 }
 
 .card h3 {
@@ -893,4 +897,430 @@ main {
 
 .pulse {
     animation: pulse 2s infinite;
+}
+
+/* ============ POMODORO TIMER ============ */
+.pomodoro-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.pomodoro-timer {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.timer-display {
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, rgba(92, 107, 192, 0.1), rgba(126, 87, 194, 0.1));
+    padding: 2rem;
+    border-radius: 1rem;
+    min-width: 300px;
+    margin-bottom: 1rem;
+}
+
+.timer-label {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.pomodoro-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.pomodoro-stats {
+    text-align: center;
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    width: 100%;
+}
+
+.pomodoro-stats p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+/* ============ LERN ZEIT SETTINGS ============ */
+.lernzeit-settings {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.setting-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.setting-group .input-field {
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--accent-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.setting-group .input-field:focus {
+    outline: none;
+    border-color: #7e57c2;
+    box-shadow: 0 0 8px rgba(126, 87, 194, 0.3);
+}
+
+.time-adjuster {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.time-btn {
+    padding: 0.6rem 0.8rem;
+    border: 2px solid var(--accent-color);
+    border-radius: 0.5rem;
+    background: var(--bg-primary);
+    color: var(--accent-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.time-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.time-btn:active {
+    transform: scale(0.95);
+}
+
+.time-btn-small {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* ============ LEARNING CONTENT STYLES ============ */
+.grammar-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.grammar-item {
+    padding: 1.2rem;
+    background: linear-gradient(135deg, rgba(232, 236, 255, 0.8), rgba(224, 230, 255, 0.8));
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0.5rem;
+}
+
+.grammar-item h4 {
+    color: var(--accent-color);
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.grammar-item p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.vocab-item {
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(232, 236, 255, 0.8), rgba(224, 230, 255, 0.8));
+    border-radius: 0.5rem;
+    border: 1px solid rgba(92, 107, 192, 0.3);
+    color: var(--text-primary);
+}
+
+.vocab-item strong {
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.formula-item {
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(232, 236, 255, 0.8), rgba(224, 230, 255, 0.8));
+    border-radius: 0.5rem;
+    border: 2px solid var(--accent-color);
+}
+
+.formula-item h4 {
+    color: var(--accent-color);
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+}
+
+.formula-item p {
+    margin: 0.4rem 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.formula-item strong {
+    color: #7e57c2;
+}
+
+.spelling-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.spelling-item {
+    padding: 1.2rem;
+    background: linear-gradient(135deg, rgba(232, 236, 255, 0.8), rgba(224, 230, 255, 0.8));
+    border-radius: 0.5rem;
+    border-left: 4px solid #ab47bc;
+}
+
+.spelling-item p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.spelling-item strong {
+    color: #ab47bc;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tips-list li {
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, rgba(92, 107, 192, 0.1), rgba(126, 87, 194, 0.1));
+    border-left: 4px solid #5c6bc0;
+    border-radius: 0.4rem;
+    color: var(--text-primary);
+}
+
+.tips-list li:before {
+    content: "";
+}
+
+@media (max-width: 768px) {
+    .lernzeit-settings {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* ============ CALCULATOR ============ */
+.calculator-card {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.calculator {
+    background: var(--bg-secondary);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(92, 107, 192, 0.2);
+    max-width: 400px;
+    width: 100%;
+}
+
+.calc-display {
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.calc-display input {
+    width: 100%;
+    font-size: 2rem;
+    text-align: right;
+    border: none;
+    background: transparent;
+    color: var(--accent-color);
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    padding: 0;
+}
+
+.calc-display input:focus {
+    outline: none;
+}
+
+.calc-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+.calc-btn {
+    padding: 1.2rem 0.5rem;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+
+.calc-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.calc-btn:active {
+    transform: scale(0.95);
+}
+
+.calc-op {
+    background: var(--accent-color);
+    color: white;
+}
+
+.calc-op:hover {
+    background: #7e57c2;
+}
+
+.calc-equals {
+    background: linear-gradient(135deg, #5c6bc0, #7e57c2);
+    color: white;
+    font-size: 1.5rem;
+}
+
+.calc-equals:hover {
+    background: linear-gradient(135deg, #7e57c2, #ab47bc);
+}
+
+.calc-clear {
+    background: #ef5350;
+    color: white;
+    font-weight: bold;
+}
+
+.calc-clear:hover {
+    background: #c62828;
+}
+
+.calc-sci {
+    background: linear-gradient(135deg, #ab47bc, #7e57c2);
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.calc-sci:hover {
+    background: linear-gradient(135deg, #7e57c2, #5c6bc0);
+}
+
+.calc-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(92, 107, 192, 0.1), rgba(126, 87, 194, 0.1));
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ============ HAUSAUFGABEN ============ */
+.hausaufgabe-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.hausaufgabe-item.completed {
+    opacity: 0.6;
+}
+
+.hausaufgabe-item.completed .hausaufgabe-text {
+    text-decoration: line-through;
+}
+
+.hausaufgabe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.hausaufgabe-text {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.hausaufgabe-fach {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+}
+
+.hausaufgabe-due {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.hausaufgabe-due.overdue {
+    color: #ef5350;
+    font-weight: bold;
+}
+
+.hausaufgabe-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.hausaufgabe-actions button {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.85rem;
 }

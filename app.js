@@ -1261,9 +1261,411 @@ function filterContent() {
     }
 }
 
+// ============ HAUSAUFGABEN ============
+function addHausaufgabe() {
+    const input = document.getElementById('haufgabenInput');
+    const fach = document.getElementById('haufgabenFachInput');
+    const fallig = document.getElementById('haufgabenFalligInput');
+
+    if (!input.value || !fach.value || !fallig.value) {
+        alert('⚠️ Bitte alle Felder ausfüllen!');
+        return;
+    }
+
+    const hausaufgabe = {
+        id: Date.now(),
+        text: input.value,
+        fach: fach.value,
+        fallig: fallig.value,
+        completed: false,
+        erstellt: new Date().toLocaleDateString('de-DE')
+    };
+
+    if (!appData.hausaufgaben) {
+        appData.hausaufgaben = [];
+    }
+    appData.hausaufgaben.push(hausaufgabe);
+    saveData();
+
+    input.value = '';
+    fach.value = '';
+    fallig.value = '';
+    renderHausaufgaben();
+}
+
+function toggleHausaufgabe(id) {
+    const hausaufgabe = appData.hausaufgaben.find(h => h.id === id);
+    if (hausaufgabe) {
+        hausaufgabe.completed = !hausaufgabe.completed;
+        saveData();
+        renderHausaufgaben();
+    }
+}
+
+function deleteHausaufgabe(id) {
+    appData.hausaufgaben = appData.hausaufgaben.filter(h => h.id !== id);
+    saveData();
+    renderHausaufgaben();
+}
+
+function renderHausaufgaben() {
+    const list = document.getElementById('hausaufgaben-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!appData.hausaufgaben || appData.hausaufgaben.length === 0) {
+        list.innerHTML = '<p class="empty-state">Keine Hausaufgaben eingetragen 📝</p>';
+        return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const sorted = [...appData.hausaufgaben].sort((a, b) => new Date(a.fallig) - new Date(b.fallig));
+
+    sorted.forEach(ha => {
+        const isOverdue = ha.fallig < today && !ha.completed;
+        const div = document.createElement('div');
+        div.className = `hausaufgabe-item ${ha.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
+        
+        div.innerHTML = `
+            <div class="hausaufgabe-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <input type="checkbox" ${ha.completed ? 'checked' : ''} 
+                        onchange="toggleHausaufgabe(${ha.id})" style="margin-right: 1rem; width: 20px; height: 20px; cursor: pointer;">
+                    <div>
+                        <span class="hausaufgabe-text">${ha.text}</span>
+                        <span class="hausaufgabe-fach">${ha.fach}</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="hausaufgabe-due ${isOverdue ? 'overdue' : ''}">
+                    📅 Fällig: ${new Date(ha.fallig).toLocaleDateString('de-DE')}
+                    ${isOverdue && !ha.completed ? ' ⚠️ ÜBERFÄLLIG' : ''}
+                </span>
+                <button class="btn btn-danger btn-small" onclick="deleteHausaufgabe(${ha.id})">🗑️</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// ============ LERN ZEIT (POMODORO) ============
+let pomodoroState = {
+    timeLeft: 25 * 60,
+    totalTime: 25 * 60,
+    isRunning: false,
+    isBreak: false,
+    pomodorosDone: 0,
+    breaksDone: 0,
+    focusTime: 25,  // in Minuten
+    breakTime: 5    // in Minuten
+};
+
+let pomodoroInterval = null;
+
+function adjustFocusTime(change) {
+    const focusInput = document.getElementById('focusTimeInput');
+    let newValue = (parseInt(focusInput.value) || 25) + change;
+    newValue = Math.max(0, Math.min(120, newValue)); // Min 0, Max 120
+    focusInput.value = newValue;
+}
+
+function adjustBreakTime(change) {
+    const breakInput = document.getElementById('breakTimeInput');
+    let newValue = (parseInt(breakInput.value) || 5) + change;
+    newValue = Math.max(0, Math.min(60, newValue)); // Min 0, Max 60
+    breakInput.value = newValue;
+}
+
+function updateTimerSettings() {
+    const focusInput = document.getElementById('focusTimeInput');
+    const breakInput = document.getElementById('breakTimeInput');
+    
+    if (focusInput && breakInput) {
+        pomodoroState.focusTime = parseInt(focusInput.value) || 25;
+        pomodoroState.breakTime = parseInt(breakInput.value) || 5;
+        
+        // Nur reset wenn Timer nicht läuft
+        if (!pomodoroState.isRunning) {
+            resetLernzeit();
+        }
+        alert('⚙️ Einstellungen gespeichert!');
+    }
+}
+
+function startLernzeit() {
+    if (pomodoroState.isRunning) return;
+    pomodoroState.isRunning = true;
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('pauseBtn').style.display = 'block';
+    
+    pomodoroInterval = setInterval(() => {
+        pomodoroState.timeLeft--;
+        updateLernzeitDisplay();
+
+        if (pomodoroState.timeLeft <= 0) {
+            clearInterval(pomodoroInterval);
+            pomodoroState.isRunning = false;
+            
+            if (pomodoroState.isBreak) {
+                pomodoroState.breaksDone++;
+                pomodoroState.isBreak = false;
+                pomodoroState.timeLeft = pomodoroState.focusTime * 60;
+                pomodoroState.totalTime = pomodoroState.focusTime * 60;
+                alert('🎯 Pause vorbei! Neues Fokus-Session startet! 📚');
+            } else {
+                pomodoroState.pomodorosDone++;
+                appData.pomodorosCompleted = (appData.pomodorosCompleted || 0) + 1;
+                saveData();
+                pomodoroState.isBreak = true;
+                pomodoroState.timeLeft = pomodoroState.breakTime * 60;
+                pomodoroState.totalTime = pomodoroState.breakTime * 60;
+                alert('✅ Fokus-Session abgeschlossen! Verdiente Pause! ☕');
+            }
+            
+            updateLernzeitDisplay();
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('pauseBtn').style.display = 'none';
+        }
+    }, 1000);
+}
+
+function pauseLernzeit() {
+    if (pomodoroInterval) clearInterval(pomodoroInterval);
+    pomodoroState.isRunning = false;
+    document.getElementById('startBtn').style.display = 'block';
+    document.getElementById('pauseBtn').style.display = 'none';
+}
+
+function resetLernzeit() {
+    if (pomodoroInterval) clearInterval(pomodoroInterval);
+    pomodoroState.isRunning = false;
+    pomodoroState.isBreak = false;
+    pomodoroState.timeLeft = pomodoroState.focusTime * 60;
+    pomodoroState.totalTime = pomodoroState.focusTime * 60;
+    updateLernzeitDisplay();
+    document.getElementById('startBtn').style.display = 'block';
+    document.getElementById('pauseBtn').style.display = 'none';
+}
+
+function updateLernzeitDisplay() {
+    const minutes = Math.floor(pomodoroState.timeLeft / 60);
+    const seconds = pomodoroState.timeLeft % 60;
+    
+    document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
+    document.getElementById('timerLabel').textContent = pomodoroState.isBreak ? '☕ Pause' : '📚 Fokus-Session';
+    document.getElementById('pomodoroCount').textContent = pomodoroState.pomodorosDone;
+}
+
+// ============ CALCULATOR ============
+let calcExpression = '';
+
+function addToDisplay(value) {
+    const display = document.getElementById('calcDisplay');
+    if (value === '.') {
+        if (calcExpression.split(/[\+\-\*\/]/).pop().includes('.')) return;
+    }
+    calcExpression += value;
+    display.value = calcExpression;
+}
+
+function clearDisplay() {
+    calcExpression = '';
+    document.getElementById('calcDisplay').value = '';
+}
+
+function calculateResult() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        // Ersetze ^ mit **
+        let expression = calcExpression.replace(/\^/g, '**');
+        const result = eval(expression);
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function backspace() {
+    const display = document.getElementById('calcDisplay');
+    if (calcExpression.length > 0) {
+        calcExpression = calcExpression.slice(0, -1);
+        display.value = calcExpression || '0';
+    }
+}
+
+function addPi() {
+    const display = document.getElementById('calcDisplay');
+    calcExpression += Math.PI.toFixed(4);
+    display.value = calcExpression;
+}
+
+function calculateSquareRoot() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = Math.sqrt(eval(calcExpression));
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function calculateSquare() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = Math.pow(eval(calcExpression), 2);
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function calculatePower() {
+    const display = document.getElementById('calcDisplay');
+    calcExpression += '^';
+    display.value = calcExpression;
+}
+
+function calculateSin() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        // Konvertiere zu Radiant wenn nötig (Standard in JavaScript)
+        const result = Math.sin(eval(calcExpression) * Math.PI / 180);
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function calculateCos() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = Math.cos(eval(calcExpression) * Math.PI / 180);
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function calculateTan() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = Math.tan(eval(calcExpression) * Math.PI / 180);
+        display.value = result.toFixed(6);
+        calcExpression = String(result.toFixed(6));
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function calculatePercent() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = eval(calcExpression) / 100;
+        display.value = result;
+        calcExpression = String(result);
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+function toggleSign() {
+    const display = document.getElementById('calcDisplay');
+    try {
+        const result = eval(calcExpression) * -1;
+        display.value = result;
+        calcExpression = String(result);
+    } catch (e) {
+        display.value = 'Fehler';
+        calcExpression = '';
+    }
+}
+
+// ============ GPA & GRADE PREDICTION ============
+function calculateGPA() {
+    if (!appData.noten || appData.noten.length === 0) return 0;
+    
+    const sum = appData.noten.reduce((acc, note) => acc + parseFloat(note.note), 0);
+    return (sum / appData.noten.length).toFixed(2);
+}
+
+function predictGrades() {
+    if (!appData.noten || appData.noten.length < 3) {
+        return {
+            prediction: '-',
+            trend: '→',
+            confidence: 0
+    };
+    }
+
+    const recent = appData.noten.slice(-3).map(n => parseFloat(n.note));
+    const older = appData.noten.slice(0, -3).map(n => parseFloat(n.note));
+    
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+    const olderAvg = older.length > 0 ? older.reduce((a, b) => a + b, 0) / older.length : recentAvg;
+    
+    let trend = '→';
+    if (recentAvg < olderAvg - 0.2) trend = '📈 Besser';
+    if (recentAvg > olderAvg + 0.2) trend = '📉 Schlechter';
+    
+    const predicted = (recentAvg * 0.7 + olderAvg * 0.3).toFixed(2);
+    const confidence = Math.min(100, Math.floor((appData.noten.length / 10) * 100));
+    
+    return {
+        prediction: predicted,
+        trend: trend,
+        confidence: confidence
+    };
+}
+
+// Add Statistiken Tab für GPA & Prediction
+function updateStatisticsWithPrediction() {
+    updateStatistics();
+    
+    const gpa = calculateGPA();
+    const prediction = predictGrades();
+    
+    // Update auf Statistiken-Tab falls vorhanden
+    const statsGPA = document.getElementById('avgGrade');
+    if (statsGPA) {
+        statsGPA.textContent = gpa;
+    }
+}
+
 // ===== WINDOW LOAD EVENT =====
 window.addEventListener('load', function() {
     updateStatistics();
     checkAchievements();
     renderDashboard();
+    renderHausaufgaben();
+    updateLernzeitDisplay();
+
+    // Event Listeners für neue Features
+    const addHaBtn = document.getElementById('addHaufgabeBtn');
+    if (addHaBtn) addHaBtn.addEventListener('click', addHausaufgabe);
+
+    const updateTimerBtn = document.getElementById('updateTimerBtn');
+    if (updateTimerBtn) updateTimerBtn.addEventListener('click', updateTimerSettings);
+
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) startBtn.addEventListener('click', startLernzeit);
+
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) pauseBtn.addEventListener('click', pauseLernzeit);
+
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) resetBtn.addEventListener('click', resetLernzeit);
 });

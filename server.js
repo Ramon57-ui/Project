@@ -157,6 +157,65 @@ app.get('/api/export', async (req, res) => {
     }
 });
 
+// ===== HAUSAUFGABEN ROUTES =====
+app.post('/api/hausaufgaben', async (req, res) => {
+    try {
+        const { text, fach, fallig } = req.body;
+        const result = await db.addHausaufgabe(text, fach, fallig);
+        res.json({ success: true, id: result.id });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/hausaufgaben', async (req, res) => {
+    try {
+        const hausaufgaben = await db.getHausaufgaben();
+        res.json(hausaufgaben);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/hausaufgaben/:id', async (req, res) => {
+    try {
+        await db.deleteHausaufgabe(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.put('/api/hausaufgaben/:id', async (req, res) => {
+    try {
+        const { completed } = req.body;
+        await db.updateHausaufgabe(req.params.id, completed);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ===== POMODORO ROUTES =====
+app.post('/api/pomodoro', async (req, res) => {
+    try {
+        const { duration, is_break } = req.body;
+        const result = await db.addPomodoroSession(duration, is_break);
+        res.json({ success: true, id: result.id });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/pomodoro/stats', async (req, res) => {
+    try {
+        const stats = await db.getPomodoroStats();
+        res.json(stats);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });

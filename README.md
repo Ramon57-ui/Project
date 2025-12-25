@@ -1,321 +1,223 @@
-# 📚 Schulplaner 2025/2026 - Dokumentation
+# 📚 Schulplaner Pro - Quali-Edition 2025
 
-Eine moderne Web-Anwendung zur Verwaltung von Schulnoten, Terminen, Notizen und Fehlzeiten mit motivierenden Features.
+> **Dein persönlicher Lernbegleiter für den Qualifizierenden Abschluss**
 
-## 🎯 Funktionen
+<div align="center">
 
-### 📝 Notenverwaltung
-- ✅ Noten von 1-6 mit 0,1er-Schritten eingeben
-- ✅ Verschiedene Fächer verwalten
-- ✅ Farb-Codierung nach Notenwert
-- ✅ Alle Noten sortiert nach Datum anzeigen
-- ✅ Einzelne Noten löschen
+![Version](https://img.shields.io/badge/Version-2.0-blue)
+![Status](https://img.shields.io/badge/Status-Aktiv-success)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-### 📅 Terminverwaltung
-- ✅ Termine/Prüfungen mit Datum und Uhrzeit eintragen
-- ✅ Verschiedene Kategorien: Prüfung, Hausaufgabe, Projekt, Sonstiges
-- ✅ Termine als erledigt markieren
-- ✅ Automatische Sortierung nach Datum
-- ✅ Termine löschen
+**[🚀 Schnellstart](#-schnellstart) • [📊 Features](#-features-übersicht) • [📐 Quali-Inhalte](#-quali-vorbereitung) • [🔧 API](#-api-endpunkte)**
 
-### 📝 Notizen-System
-- ✅ Beliebige Notizen mit Titel erstellen
-- ✅ Längere Textinhalte speichern
-- ✅ Alle Notizen mit Erstellungsdatum anzeigen
-- ✅ Notizen jederzeit löschen
-
-### ⏰ Fehlzeiten-Tracker
-- ✅ Fehlzeiten mit Grund eintragen
-- ✅ Stundenzahl erfassen
-- ✅ Verschiedene Gründe: Krank, Zahnarzt, Arzt, Urlaub, Sonstiges
-- ✅ Gesamte Fehlzeiten automatisch berechnen
-- ✅ Chronologische Übersicht
-
-### 📈 Statistiken & Auswertungen
-- ✅ Durchschnittsnote berechnen
-- ✅ Beste und schlechteste Note anzeigen
-- ✅ Balkendiagramm mit Chart.js
-- ✅ Durchschnittsnote pro Fach visualisieren
-- ✅ Automatische Aktualisierung bei neuen Noten
-
-### 🏆 Achievement-System
-- ✅ 6 verschiedene Erfolge freischalten
-- ✅ Visuelle Anzeige von Lock/Unlock Status
-- ✅ Motivierende Ziele erreichen
-- ✅ Lerntag-Feature mit Counter
-
-### 🌙 Dark/Light Mode
-- ✅ Umschalter im Header
-- ✅ Einstellung wird gespeichert
-- ✅ Angenehm für die Augen
-
-### 💾 Datenspeicherung
-- ✅ LocalStorage speichert alle Daten
-- ✅ Daten bleiben auch nach Browser-Neustart
-- ✅ Option zum Löschen aller Daten
-
-### 📱 Responsive Design
-- ✅ Funktioniert auf Desktop, Tablet und Smartphone
-- ✅ Touch-freundliche Bedienung
-- ✅ Scrollbare Tab-Navigation auf kleinen Geräten
-
-## 🚀 Erste Schritte
-
-### Installation
-1. Lade alle Dateien in einen Ordner
-2. Öffne `index.html` im Browser
-3. Fertig! Keine Installation nötig 🎉
-
-### Live Server (empfohlen)
-1. Installiere die Extension "Live Server" in VS Code
-2. Rechtsklick auf `index.html`
-3. "Open with Live Server" wählen
-4. Automatisches Reload bei Dateiänderungen
-
-## 📖 Wie man die App nutzt
-
-### Noten hinzufügen
-1. Gehe zum Tab "📊 Noten"
-2. Gib ein:
-   - **Fach**: z.B. "Mathematik"
-   - **Note**: 1.0 - 6.0 (Dezimalzahlen möglich)
-   - **Datum**: Wann hast du die Note bekommen?
-3. Klicke "✅ Note speichern"
-
-### Termine erstellen
-1. Tab "📅 Termine" öffnen
-2. Gib ein:
-   - **Termintitel**: z.B. "Mathematik Test"
-   - **Datum & Uhrzeit**: Wann ist der Termin?
-   - **Typ**: Prüfung / Hausaufgabe / Projekt / Sonstiges
-3. "✅ Termin speichern"
-
-### Notizen schreiben
-1. Tab "📝 Notizen" öffnen
-2. Gib ein:
-   - **Titel**: Kurzer Überblick
-   - **Text**: Deine Notiz
-3. "✅ Notiz speichern"
-
-### Fehlzeiten verwalten
-1. Tab "⏰ Fehlzeiten" öffnen
-2. Gib ein:
-   - **Datum**: Wann warst du abwesend?
-   - **Stunden**: Wie viele Stunden?
-   - **Art**: Grund der Abwesenheit
-3. "✅ Fehlzeit speichern"
-
-### Statistiken ansehen
-1. Tab "📈 Statistiken" öffnen
-2. Sehe:
-   - Dein Durchschnitt
-   - Beste und schlechteste Note
-   - Grafik mit Durchschnitt pro Fach
-   - Gesamtzahl der Noten
-
-### Achievements
-1. Tab "🏆 Achievements" öffnen
-2. Sehe alle deine Erfolge
-3. Grüne Erfolge = freigeschaltet ✅
-4. Aktiviere "🚀 Lerntag" für extra Motivation
-
-## 🔧 Technische Details
-
-### Dateistruktur
-```
-schulplaner-app/
-├── index.html       (HTML - Struktur)
-├── styles.css       (CSS - Design)
-├── app.js          (JavaScript - Logik)
-└── README.md       (Diese Datei)
-```
-
-### Verwendete Technologien
-- **HTML5** - Semantische Struktur
-- **CSS3** - Modern Styling mit CSS Variables
-- **JavaScript (ES6+)** - App-Logik
-- **Chart.js** - Diagramme & Grafiken
-- **LocalStorage API** - Persistente Datenspeicherung
-
-### Browserkompatibilität
-- ✅ Chrome/Chromium (empfohlen)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
-- ✅ Mobile Browser
-
-## 🎨 Design-Anpassungen
-
-### Farben ändern
-In `styles.css` die `:root` Variablen anpassen:
-```css
-:root {
-    --accent-color: #3498db;      /* Hauptfarbe */
-    --success-color: #27ae60;      /* Grün */
-    --danger-color: #e74c3c;       /* Rot */
-    --warning-color: #f39c12;      /* Orange */
-}
-```
-
-### Schriftart ändern
-In `styles.css` die Font-Family anpassen:
-```css
-body {
-    font-family: 'Georgia', serif;  /* Andere Schrift */
-}
-```
-
-### Button-Stil ändern
-In `styles.css` Button-Klassen anpassen:
-```css
-.btn-primary {
-    background-color: #e91e63;  /* Pink */
-    border-radius: 20px;        /* Runder */
-}
-```
-
-## ⚙️ Erweitermöglichkeiten
-
-### 1. Neue Achievements hinzufügen
-In `app.js`, in der `achievementsData` Variable:
-```javascript
-{
-    id: 7,
-    icon: '⭐',
-    title: 'Neuer Erfolg',
-    description: 'Beschreibung',
-    unlocked: false
-}
-```
-
-### 2. Neue Tab hinzufügen
-In `index.html` - Navigation:
-```html
-<button class="tab-btn" data-tab="hausaufgaben">📋 Hausaufgaben</button>
-```
-
-In `index.html` - Content:
-```html
-<section id="hausaufgaben" class="tab-content">
-    <h2>📋 Hausaufgaben</h2>
-    <!-- Dein Content -->
-</section>
-```
-
-### 3. Neue Fehlzeitkategorie
-In `app.js`, in `renderFehlzeiten()`:
-```javascript
-const artEmoji = {
-    'krank': '🤒',
-    'zahn': '🦷',
-    'neue-kategorie': '🎯'  // Neue Kategorie
-};
-```
-
-### 4. Email-Export
-Durch externe Services wie Firebase/Backend möglich
-
-### 5. Druckfunktion
-```javascript
-function printData() {
-    window.print();
-}
-```
-
-## 🐛 Häufige Fehler & Lösungen
-
-### Chart wird nicht angezeigt
-**Problem**: "Chart is not defined"
-**Lösung**: 
-- Internet-Verbindung prüfen (Chart.js lädt von CDN)
-- Browser aktualisieren (Ctrl+Shift+R)
-- Browser-Cache leeren
-
-### Dark Mode funktioniert nicht
-**Problem**: Klassenwechsel funktioniert nicht
-**Lösung**:
-- Browser-Konsole öffnen (F12)
-- Keine Fehler? → Neustart
-- `app.js` in `index.html` eingebunden?
-
-### Daten werden nicht gespeichert
-**Problem**: Nach Neustart sind Daten weg
-**Lösung**:
-- localStorage ist in Private Browsing deaktiviert
-- LocalStorage Limit erreicht? (bei ~5MB)
-- Browser-Cache löschen (und Seite neuladen)
-
-### Eingabefelder funktionieren nicht
-**Problem**: Kann nicht eingeben
-**Lösung**:
-- JavaScript ist deaktiviert? → Aktivieren
-- Andere Erweiterungen? → Deaktivieren
-- Browser Neustart
-
-### Buttons funktionieren nicht
-**Problem**: Click hat keine Reaktion
-**Lösung**:
-- `app.js` korrekt eingebunden?
-- Browser-Konsole auf Fehler checken (F12)
-- Älteren Browser aktualisieren
-
-## 📊 Tastenkombinationen
-
-| Tastenkombination | Funktion |
-|---|---|
-| Strg + S | Speichern (Browser-Standard) |
-| Enter | Absenden in Eingabefeldern |
-| F12 | Browser-Konsole öffnen |
-| Strg + Shift + I | Inspektor öffnen |
-| Strg + Shift + C | Element inspizieren |
-
-## 🌐 Online-Version hosten
-
-### Kostenlos auf GitHub Pages
-1. GitHub Account erstellen
-2. Neues Repository "schulplaner"
-3. Dateien hochladen
-4. Settings → Pages → Main Branch
-5. URL kopieren - fertig! 🎉
-
-### Andere Optionen
-- Netlify (kostenlos, einfach)
-- Vercel (kostenlos, schnell)
-- Firebase Hosting (kostenlos, Google)
-- Heroku (mit Backend-Support)
-
-## 📞 Kontakt & Support
-
-**Bugs melden?**
-- Browser-Konsole (F12) Fehler kopieren
-- Schritt-für-Schritt Anleitung schreiben
-- Screenshot machen
-
-**Feature-Wünsche?**
-- Gute Ideen sammeln
-- Beschreiben was soll verbessert werden
-- Wireframe/Skizze zeichnen
-
-## 📜 Lizenz
-
-Diese Anwendung ist Open Source und frei nutzbar. 
-Gerne teilen, verwenden und erweitern!
-
-## 🎉 Viel Erfolg!
-
-Nutze diese App um deine Schulzeit besser zu organisieren.
-Mit regelmäßiger Nutzung wirst du:
-
-✅ Bessere Noten erreichen
-✅ Weniger Stress haben
-✅ Besser organisiert sein
-✅ Lernen macht mehr Spaß
-✅ Ziele erreichen 🏆
-
-**Happy Learning! 📚🚀**
+</div>
 
 ---
 
-**Version**: 1.0
-**Letzte Aktualisierung**: Dezember 2025
-**Autor**: Schulplaner Team
+## 🎯 Features-Übersicht
+
+| Feature | Beschreibung |
+|---------|-------------|
+| 📊 **Noten** | Alle Noten verwalten & Durchschnitt berechnen |
+| 📅 **Kalender** | Termine & Prüfungen im Blick |
+| 📝 **Notizen** | Wichtiges schnell notieren |
+| ⏰ **Fehlzeiten** | Krankheitstage dokumentieren |
+| 🇬🇧 **Englisch** | Grammatik, Vokabeln & Quali-Tipps |
+| 📐 **Mathe** | Formeln, Geometrie & Rechenwege |
+| 📖 **Deutsch** | Rechtschreibung, Grammatik & Textarbeit |
+| ⏱️ **Lern Zeit** | Fokus-Timer mit anpassbarer Dauer |
+| 🔢 **Rechner** | Wissenschaftlicher Taschenrechner |
+| 📈 **Statistiken** | Notentrends visualisiert mit Chart.js |
+| 🏆 **Achievements** | Motivation durch Erfolge & Streak-Counter |
+
+---
+
+## 🚀 Schnellstart
+
+### 1️⃣ Repository klonen
+```bash
+git clone https://github.com/Ramon57-ui/Project.git
+cd Project/schulplaner-app
+```
+
+### 2️⃣ Dependencies installieren
+```bash
+npm install
+```
+
+### 3️⃣ Server starten
+```bash
+node server.js
+```
+
+### 4️⃣ Browser öffnen
+```
+http://localhost:3000
+```
+
+---
+
+## 🛠️ Technologie-Stack
+
+| Kategorie | Technologie |
+|-----------|-------------|
+| **Frontend** | HTML5, CSS3, JavaScript ES6+ |
+| **Backend** | Node.js, Express.js |
+| **Datenbank** | SQLite3 |
+| **Charts** | Chart.js |
+| **Design** | Glasmorphism, CSS Variables |
+| **Theme** | Blau-Lila Gradient |
+
+---
+
+## 📁 Projektstruktur
+
+```
+schulplaner-app/
+├── 📄 index.html       # Haupt-UI mit allen 12 Tabs
+├── 📄 styles.css       # Blau-Lila Glasmorphism Design
+├── 📄 app.js           # Frontend-Logik & Features
+├── 📄 server.js        # Express REST-API
+├── 📄 db.js            # SQLite Datenbank-Wrapper
+├── 📄 package.json     # Node.js Dependencies
+├── 📄 README.md        # Diese Dokumentation
+└── 📄 ARBEITSPLAN.md   # Entwicklungs-Roadmap
+```
+
+---
+
+## 🎨 Design
+
+### Farbschema
+| Farbe | Hex | Verwendung |
+|-------|-----|------------|
+| 🔵 **Primär** | `#5c6bc0` | Navigation, Buttons |
+| 🟣 **Sekundär** | `#7e57c2` | Akzente, Hover |
+| 💜 **Akzent** | `#ab47bc` | Highlights |
+| 🌈 **Gradient** | Blau → Lila | Hintergrund |
+
+### UI-Elemente
+- ✨ Glasmorphism-Effekte mit `backdrop-filter`
+- 🌙 Dark Mode Support
+- 📱 Responsive Layout
+- 🎯 12 intuitive Tab-Navigation
+
+---
+
+## 📐 Quali-Vorbereitung
+
+### 🇬🇧 Englisch-Bereich
+| Inhalt | Was du lernst |
+|--------|---------------|
+| **Grammar** | Simple Present, Past, Future, Conditionals, If-Sätze |
+| **Vocabulary** | Familie, Schule, Freizeit, Gefühle, Essen, Berufe |
+| **Quali-Tipps** | Textverständnis, Übersetzung, Prüfungstricks |
+
+### 📐 Mathe-Bereich
+| Inhalt | Formeln & Themen |
+|--------|------------------|
+| **Geometrie** | Kreis, Rechteck, Dreieck, Würfel, Kugel, Zylinder |
+| **Algebra** | Gleichungen, Prozent, Dreisatz, Pythagoras |
+| **Rechner** | π, √, x², sin/cos/tan, Potenzen (x^y) |
+
+### 📖 Deutsch-Bereich
+| Inhalt | Was du lernst |
+|--------|---------------|
+| **Grammatik** | Satzglieder, Zeitformen, Konjugation, Kasus |
+| **Rechtschreibung** | das/dass, seit/seid, Groß-/Kleinschreibung |
+| **Textarbeit** | Analyse, Zusammenfassung, Erörterung |
+
+---
+
+## 🔧 API-Endpunkte
+
+| Methode | Endpunkt | Beschreibung |
+|---------|----------|--------------|
+| `GET` | `/api/noten` | Alle Noten abrufen |
+| `POST` | `/api/noten` | Neue Note speichern |
+| `DELETE` | `/api/noten/:id` | Note löschen |
+| `GET` | `/api/termine` | Alle Termine abrufen |
+| `POST` | `/api/termine` | Neuen Termin speichern |
+| `DELETE` | `/api/termine/:id` | Termin löschen |
+| `GET` | `/api/notizen` | Alle Notizen abrufen |
+| `POST` | `/api/notizen` | Neue Notiz speichern |
+| `DELETE` | `/api/notizen/:id` | Notiz löschen |
+| `GET` | `/api/fehlzeiten` | Alle Fehlzeiten abrufen |
+| `POST` | `/api/fehlzeiten` | Neue Fehlzeit speichern |
+| `DELETE` | `/api/fehlzeiten/:id` | Fehlzeit löschen |
+
+---
+
+## 📋 Entwicklungs-Roadmap
+
+Siehe **[ARBEITSPLAN.md](ARBEITSPLAN.md)** für den detaillierten Wochenplan.
+
+### ✅ Abgeschlossen (v2.0)
+- [x] Quali-Vorbereitung: Englisch, Mathe, Deutsch
+- [x] Wissenschaftlicher Taschenrechner
+- [x] Lern Zeit mit anpassbarer Dauer
+- [x] Blau-Lila Glasmorphism Design
+
+### 🔄 Geplant
+- [ ] 🎯 Quiz-System mit Punkten
+- [ ] 📈 Lernfortschritt-Tracking
+- [ ] 🔔 Prüfungs-Erinnerungen
+- [ ] 📱 Verbesserte Mobile-Ansicht
+- [ ] 📤 Daten-Export (PDF)
+
+---
+
+## 💻 Lokale Entwicklung
+
+### Voraussetzungen
+- Node.js v18+
+- npm oder yarn
+- Moderner Browser
+
+### Git Workflow
+```bash
+# Änderungen speichern
+git add -A
+git commit -m "Feature: Beschreibung"
+git push origin main
+```
+
+---
+
+## 📝 Changelog
+
+### v2.0 (Januar 2025)
+- ✨ Quali-Vorbereitung: Englisch, Mathe, Deutsch Tabs
+- 🔢 Wissenschaftlicher Taschenrechner (π, √, x², sin/cos/tan)
+- ⏱️ Lern Zeit mit +1/-1 und +5/-5 Buttons
+- 🎨 Blau-Lila Glasmorphism Design
+
+### v1.0 (Dezember 2024)
+- 📊 Noten-Verwaltung
+- 📅 Kalender & Termine
+- 📝 Notizen-System
+- ⏰ Fehlzeiten-Tracker
+- 📈 Statistiken mit Charts
+- 🏆 Achievement-System
+
+---
+
+## 👤 Autor
+
+**Ramon** | 8. Klasse Mittelschule | Quali 2025
+
+---
+
+## 📄 Lizenz
+
+MIT License - Frei verwendbar für persönliche Projekte.
+
+---
+
+<div align="center">
+
+**⭐ Viel Erfolg beim Quali! ⭐**
+
+*Jeden Tag ein bisschen lernen - Erfolg kommt Schritt für Schritt!*
+
+</div>
