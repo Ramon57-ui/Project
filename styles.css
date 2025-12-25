@@ -597,24 +597,37 @@ main {
     overflow: hidden;
 }
 
-.calendar-table tbody td:hover {
-    background-color: var(--accent-color);
+/* Farben für normale Tage (Orange-Rot) */
+.calendar-table tbody td.regular-day {
+    background-color: #ff6b5b;
     color: white;
+}
+
+/* Farben für Feiertage/Ferien (Grün) */
+.calendar-table tbody td.has-feiertag {
+    background-color: #51cf66;
+    color: white;
+    font-weight: 600;
+}
+
+.calendar-table tbody td:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
 }
 
 .calendar-table tbody td.other-month {
     color: var(--text-secondary);
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 .calendar-table tbody td.today {
-    border: 2px solid var(--success-color);
+    border: 3px solid #ffd700;
     font-weight: bold;
 }
 
 .calendar-table tbody td.selected {
-    background-color: var(--accent-color);
-    color: white;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
 .calendar-day-number {

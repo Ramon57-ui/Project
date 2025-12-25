@@ -342,6 +342,13 @@ function renderCalendar() {
                 const dayNotes = appData.noten.filter(n => n.datum === dateStr);
                 const dayFeiertag = augsburgerFeiertage.find(f => f.datum === dateStr);
                 
+                // Add class for feiertag/ferien background color
+                if (dayFeiertag) {
+                    cell.classList.add('has-feiertag');
+                } else {
+                    cell.classList.add('regular-day');
+                }
+                
                 if (dayFeiertag) {
                     const feiertag = document.createElement('div');
                     feiertag.className = dayFeiertag.typ === 'ferien' ? 'calendar-day-ferien' : 'calendar-day-feiertag';
