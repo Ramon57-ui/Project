@@ -588,12 +588,13 @@ main {
 .calendar-table tbody td {
     border: 1px solid var(--border-color);
     padding: 0.75rem;
-    min-height: 80px;
+    height: 100px;
     vertical-align: top;
     background-color: var(--bg-secondary);
     cursor: pointer;
     transition: var(--transition);
     position: relative;
+    overflow: hidden;
 }
 
 .calendar-table tbody td:hover {
