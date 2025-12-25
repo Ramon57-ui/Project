@@ -894,6 +894,3 @@ main {
 .pulse {
     animation: pulse 2s infinite;
 }
-
-git config --global user.name "Ramon"
-git config --global user.email "deine-email@example.com"
