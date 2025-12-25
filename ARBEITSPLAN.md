@@ -1,24 +1,240 @@
-# 📋 Schulplaner Pro - Arbeitsplan & Verbesserungen
+# 📋 Schulplaner - Arbeitsplan & Verbesserungen
 
-> **Stand:** Januar 2025  
-> **Erstellt für:** Ramon - Quali-Vorbereitung 2025  
+> **Stand:** Dezember 2025  
+> **Fokus:** Ein echter, funktionaler Schulplaner  
 > **Status-Legende:** ⬜ Offen | 🔄 In Arbeit | ✅ Erledigt
 
 ---
 
-## 📊 Projekt-Übersicht
+## 🎯 Kern-Funktionen des Planers
 
-| Bereich | Status | Priorität |
-|---------|--------|-----------|
-| Grundfunktionen | ✅ 100% | - |
-| Quali-Inhalte | 🔄 70% | HOCH |
-| Design | ✅ 95% | - |
-| Performance | ⬜ 0% | MITTEL |
-| Mobile | ⬜ 0% | NIEDRIG |
+| Feature | Status | Wichtigkeit |
+|---------|--------|-------------|
+| 📅 **Termine/Kalender** | ✅ 100% | KERN |
+| 📝 **Notizen** | ✅ 100% | KERN |
+| 📊 **Noten** | ✅ 100% | KERN |
+| ⏰ **Fehlzeiten** | ✅ 100% | KERN |
+| 📈 **Statistiken** | ✅ 95% | WICHTIG |
+| 🏆 **Achievements** | ✅ 100% | BONUS |
 
 ---
 
-## 📅 WOCHE 1: Quali-Inhalte Erweitern
+## 📅 WOCHE 1: Planer-Features optimieren
+
+### Tag 1: Bessere Terminverwaltung 📅
+> **Schwierigkeit:** ⭐⭐ Mittel | **Zeitaufwand:** 2-3 Stunden
+
+- [ ] **Quali-Prüfungstermine speichern**
+  - Große Kalender-Ansicht mit Highlights
+  - Farbcodierung: Englisch 🇬🇧, Mathe 📐, Deutsch 📖
+  - Countdown zu Prüfungen (z.B. "noch 45 Tage")
+
+- [ ] **Termine filtern & sortieren**
+  - Nach Typ: Prüfung, Hausaufgabe, Projekt
+  - Nach Datum
+  - Nur kommende Termine anzeigen
+
+- [ ] **Reminder/Benachrichtigungen**
+  - Warnung 1 Woche vor Prüfung
+  - Warnung 1 Tag vorher
+  - Browser-Benachrichtigung (optional)
+
+**Datei bearbeiten:** `index.html` + `app.js`
+
+---
+
+### Tag 2-3: Noten-Management verbessern 📊
+> **Schwierigkeit:** ⭐⭐ Mittel | **Zeitaufwand:** 3-4 Stunden
+
+- [ ] **Noten nach Fach sortieren**
+  - Tab für jedes Fach (Englisch, Mathe, Deutsch, etc.)
+  - Durchschnitt pro Fach berechnen
+  - Trend zeigen (besser/schlechter geworden?)
+
+- [ ] **Noten für Quali relevant markieren**
+  - Quali-Prüfungs-Noten separat tracken
+  - Trennung: Schuljahr-Noten vs. Quali-Noten
+
+- [ ] **Export-Funktion**
+  - Noten als Text/Liste zum Kopieren
+  - Einfacher zum Notieren im Schulplaner
+
+**Datei bearbeiten:** `index.html` + `app.js`
+
+---
+
+### Tag 4: Notizen intelligenter nutzen 📝
+> **Schwierigkeit:** ⭐⭐ Mittel | **Zeitaufwand:** 2-3 Stunden
+
+- [ ] **Notizen nach Fach kategorisieren**
+  - Icon pro Fach (🇬🇧 Englisch, 📐 Mathe, 📖 Deutsch)
+  - Filter nach Fach
+  - Farb-Tags hinzufügen
+
+- [ ] **Wichtige Notizen oben pinnen**
+  - "Oben halten" Button
+  - Wichtige Themen immer sichtbar
+
+- [ ] **Notizen durchsuchen**
+  - Schnelle Text-Suche
+  - Nach Datum suchen
+
+**Datei bearbeiten:** `index.html` + `app.js`
+
+---
+
+### Tag 5: Dashboard verbessern 🏠
+> **Schwierigkeit:** ⭐⭐ Mittel | **Zeitaufwand:** 2-3 Stunden
+
+- [ ] **Übersicht der nächsten 7 Tage**
+  - Welche Termine stehen an?
+  - Welche Noten sind wichtig?
+  - Wie viel Zeit zum Lernen?
+
+- [ ] **Schnelle Aktionen**
+  - "Heute Noten eintragen?" Button
+  - "Schnelle Notiz?" Button
+  - "Was muss ich heute tun?" Bereich
+
+- [ ] **Statistiken im Überblick**
+  - Aktuelle Durchschnittsnote
+  - Fehlzeiten gesamt
+  - Lernzeit diese Woche
+
+**Datei bearbeiten:** `index.html` + `app.js`
+
+---
+
+### Tag 6-7: Testen & Cleanup 🧹
+> **Schwierigkeit:** ⭐ Leicht | **Zeitaufwand:** 2-3 Stunden
+
+- [ ] **Alle Planer-Funktionen testen**
+  - Termine hinzufügen/löschen
+  - Noten eintragen
+  - Notizen erstellen
+  - Statistiken aktualisieren
+
+- [ ] **Mobile-Ansicht überprüfen**
+  - Buttons lesbar?
+  - Datum-Eingabe funktioniert?
+  - Kalender-Ansicht mobil?
+
+- [ ] **Git Commit**
+  ```bash
+  git add -A
+  git commit -m "Feature: Planer-Optimierungen - bessere Termine, Noten, Notizen"
+  ```
+
+- [ ] **README aktualisieren**
+  - Neue Features dokumentieren
+  - Screenshots/Beschreibungen
+
+---
+
+## 📅 WOCHE 2: Lernziele & Tracking (Bonus)
+
+### Lernplan pro Woche
+- [ ] **Wöchentlicher Lernplan**
+  - "Ich möchte diese Woche 5h Englisch lernen"
+  - Fortschritt tracken
+  - Erfolg belohnen
+
+### Lernzeit-Tracking
+- [ ] **Lernzeiten speichern**
+  - Wann habe ich gelernt?
+  - Wie lange?
+  - In welchem Fach?
+  - Statistik: Lernstunden pro Woche
+
+---
+
+## ⚙️ Technische Verbesserungen
+
+### Code-Struktur
+- [ ] JavaScript in Funktionen aufteilen
+- [ ] Kommentare hinzufügen
+- [ ] Konsistenz überprüfen
+
+### Performance
+- [ ] LocalStorage optimieren
+- [ ] Weniger Daten laden
+- [ ] Schnellere Statistik-Berechnung
+
+### Fehlerbehandlung
+- [ ] Ungültige Eingaben abfangen
+- [ ] Meldungen für Fehler
+- [ ] Daten-Backup
+
+---
+
+## 📂 Was NICHT in den Planer gehört (Optional)
+
+Diese Features sind nett, aber **nicht Kern des Planers**:
+- ~~🎮 Quiz-Spiele~~ → Extra App/Browser
+- ~~🎯 Learning Games~~ → Optional
+- ~~📤 PDF-Export~~ → Später
+- ⏱️ **Lern Zeit Timer** → Behalten (sehr nützlich!)
+- 🔢 **Taschenrechner** → Behalten (für Mathe)
+
+**Fokus bleibt:** Ein guter Planer für:
+- 📅 Termine tracken
+- 📝 Notizen machen
+- 📊 Noten verwalten
+- ⏰ Fehlzeiten dokumentieren
+- 📈 Erfolg visualisieren
+
+---
+
+## ✅ Bereits erledigt
+
+- [x] Grundgerüst der App
+- [x] Noten-Verwaltung
+- [x] Kalender & Termine
+- [x] Notizen-System
+- [x] Fehlzeiten-Tracker
+- [x] Statistiken & Charts
+- [x] Achievement System
+- [x] Lern Zeit Timer
+- [x] Wissenschaftlicher Rechner
+- [x] Blau-Lila Design
+- [x] Dark Mode
+- [x] SQLite Datenbank
+
+---
+
+## 🎯 Quali-Termin-Vorlage
+
+| Prüfung | Datum | Status | Tage |
+|---------|-------|--------|------|
+| Englisch | __________ | ⬜ | |
+| Deutsch | __________ | ⬜ | |
+| Mathe | __________ | ⬜ | |
+| Projektprüfung | __________ | ⬜ | |
+
+---
+
+## 💡 Next Priority
+
+**NICHT** neue Features hinzufügen, sondern:
+
+1. ✅ **Bestehende Features perfektionieren**
+   - Planer wirklich gut machen
+   - Alle Bugs fixen
+   - User-Experience verbessern
+
+2. ✅ **Auf echte Planer-Anforderungen fokussieren**
+   - Was brauchst du WIRKLICH zum Planen?
+   - Was lenkt ab?
+   - Was macht den Unterschied?
+
+3. ✅ **Einfach & schnell zugänglich**
+   - Zügig was eintragen können
+   - Nicht zu viele Klicks
+   - Übersichtlich bleiben
+
+---
+
+**Mantra:** _Ein guter Planer ist besser als hundert bunte Features!_ 📋✨📅 WOCHE 1: Quali-Inhalte Erweitern
 
 ### Tag 1-2: Englisch verbessern 🇬🇧
 > **Schwierigkeit:** ⭐⭐ Mittel | **Zeitaufwand:** 2-3 Stunden
@@ -44,10 +260,7 @@
 ---
 
 ### Tag 3-4: Mathe Formeln & Übungen 📐
-> **Schwierigkeit:** ⭐⭐⭐ Schwer | **Zeitaufwand:** 3-4 Stunden
-
-- [ ] **Interaktive Formel-Rechner**
-  - Flächen automatisch berechnen (Eingabefelder)
+> **Schwierigkeit:** ⭐⭐⭐ SchEingabefelder)
   - Prozentrechner mit Erklärung
   - Dreisatz-Rechner mit Schritten
 
