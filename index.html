@@ -39,7 +39,6 @@
             <button class="tab-btn" data-tab="kalender">📆 Kalender</button>
             <button class="tab-btn" data-tab="noten">📊 Noten</button>
             <button class="tab-btn" data-tab="notizen">📝 Notizen</button>
-            <button class="tab-btn" data-tab="fehlzeiten">⏰ Fehlzeiten</button>
             <button class="tab-btn" data-tab="lernzeit">⏱️ Lern Zeit</button>
             <button class="tab-btn" data-tab="rechner">🧮 Rechner</button>
             <button class="tab-btn" data-tab="statistiken">📈 Statistiken</button>
@@ -219,36 +218,6 @@
                 <div class="card">
                     <h3>Meine Notizen</h3>
                     <div id="notizen-list" class="notes-list"></div>
-                </div>
-            </section>
-
-            <!-- FEHLZEITEN TAB -->
-            <section id="fehlzeiten" class="tab-content">
-                <h2>⏰ Fehlzeiten</h2>
-                <div class="card">
-                    <h3>Fehlzeit eintragen</h3>
-                    <div class="form-group">
-                        <input type="date" id="fehlzeitDatumInput" class="input">
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="fehlzeitStundenInput" placeholder="Stunden" min="0" max="12" step="0.5" class="input">
-                    </div>
-                    <div class="form-group">
-                        <select id="fehlzeitArtInput" class="input">
-                            <option value="krank">🤒 Krank</option>
-                            <option value="zahn">🦷 Zahnarzt</option>
-                            <option value="arzt">🏥 Arzt</option>
-                            <option value="urlaub">🏖️ Urlaub</option>
-                            <option value="sonstiges">❓ Sonstiges</option>
-                        </select>
-                    </div>
-                    <button id="addFehlzeitBtn" class="btn btn-primary">✅ Fehlzeit speichern</button>
-                </div>
-
-                <div class="card">
-                    <h3>Fehlzeiten-Übersicht</h3>
-                    <p id="fehlzeiten-summary" class="summary">Gesamtfehlzeiten: <strong>0 Stunden</strong></p>
-                    <div id="fehlzeiten-list" class="notes-list"></div>
                 </div>
             </section>
 
