@@ -43,7 +43,6 @@
             <button class="tab-btn" data-tab="lernzeit">⏱️ Lern Zeit</button>
             <button class="tab-btn" data-tab="rechner">🧮 Rechner</button>
             <button class="tab-btn" data-tab="statistiken">📈 Statistiken</button>
-            <button class="tab-btn" data-tab="achievements">🏆 Achievements</button>
         </nav>
 
         <!-- Main Content -->
@@ -255,7 +254,7 @@
 
             <!-- STATISTIKEN TAB -->
             <section id="statistiken" class="tab-content">
-                <h2>📈 Statistiken & Auswertungen</h2>
+                <h2>📈 Statistiken & Erfolge</h2>
                 <div class="card">
                     <h3>Notendurchschnitt pro Fach</h3>
                     <canvas id="notesChart" width="400" height="200"></canvas>
@@ -281,6 +280,13 @@
                             <p class="stat-value" id="totalGrades">0</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="card">
+                    <h3>🏆 Deine Erfolge</h3>
+                    <button id="learningDayBtn" class="btn btn-success">🚀 Lerntag aktivieren!</button>
+                    <p id="learning-day-status" class="status-message"></p>
+                    <div id="achievements-list" class="achievements-grid"></div>
                 </div>
             </section>
 
@@ -383,17 +389,7 @@
                 </div>
             </section>
 
-            <!-- ACHIEVEMENTS TAB -->
-            <section id="achievements" class="tab-content">
-                <h2>🏆 Achievements & Erfolge</h2>
-                <button id="learningDayBtn" class="btn btn-success">🚀 Lerntag aktivieren!</button>
-                <p id="learning-day-status" class="status-message"></p>
-
-                <div class="card">
-                    <h3>Deine Erfolge</h3>
-                    <div id="achievements-list" class="achievements-grid"></div>
-                </div>
-            </section>
+            <!-- ACHIEVEMENTS TAB ENTFERNT - IN STATISTIKEN INTEGRIERT -->
         </main>
 
         <!-- Footer -->
