@@ -11,6 +11,73 @@ const appData = {
     goalGrade: 2.0
 };
 
+// ===== AUGSBURGER FEIERTAGE & FERIEN 2025 =====
+const augsburgerFeiertage = [
+    // Neujahr
+    { datum: '2025-01-01', titel: '🎆 Neujahr', typ: 'feiertag' },
+    
+    // Winterferien Bayern 2024/2025
+    { datum: '2025-02-03', titel: '❄️ Winterferien Anfang', typ: 'ferien' },
+    { datum: '2025-02-07', titel: '❄️ Winterferien Ende', typ: 'ferien' },
+    
+    // Fasching/Rosenmontag
+    { datum: '2025-03-03', titel: '🎭 Rosenmontag', typ: 'feiertag' },
+    
+    // Osterferien Bayern 2025
+    { datum: '2025-03-31', titel: '🐰 Osterferien Anfang', typ: 'ferien' },
+    { datum: '2025-04-11', titel: '🐰 Osterferien Ende', typ: 'ferien' },
+    
+    // Ostersonntag/Montag
+    { datum: '2025-04-20', titel: '🐣 Ostersonntag', typ: 'feiertag' },
+    { datum: '2025-04-21', titel: '🐣 Ostermontag', typ: 'feiertag' },
+    
+    // Tag der Arbeit
+    { datum: '2025-05-01', titel: '✊ Tag der Arbeit', typ: 'feiertag' },
+    
+    // Himmelfahrt
+    { datum: '2025-05-29', titel: '☁️ Christi Himmelfahrt', typ: 'feiertag' },
+    
+    // Pfingstferien Bayern 2025
+    { datum: '2025-05-26', titel: '🌸 Pfingstferien Anfang', typ: 'ferien' },
+    { datum: '2025-05-30', titel: '🌸 Pfingstferien Ende', typ: 'ferien' },
+    
+    // Pfingsten
+    { datum: '2025-06-08', titel: '🕊️ Pfingsten', typ: 'feiertag' },
+    { datum: '2025-06-09', titel: '🕊️ Pfingstmontag', typ: 'feiertag' },
+    
+    // Fronleichnam
+    { datum: '2025-06-19', titel: '⛪ Fronleichnam', typ: 'feiertag' },
+    
+    // Sommerferien Bayern 2025
+    { datum: '2025-07-30', titel: '☀️ Sommerferien Anfang', typ: 'ferien' },
+    { datum: '2025-09-15', titel: '☀️ Sommerferien Ende', typ: 'ferien' },
+    
+    // Augsburger Friedensfest
+    { datum: '2025-08-08', titel: '🕊️ Augsburger Friedensfest', typ: 'feiertag' },
+    
+    // Maria Himmelfahrt
+    { datum: '2025-08-15', titel: '👼 Maria Himmelfahrt', typ: 'feiertag' },
+    
+    // Tag der Deutschen Einheit
+    { datum: '2025-10-03', titel: '🇩🇪 Tag der Einheit', typ: 'feiertag' },
+    
+    // Herbstferien Bayern 2025
+    { datum: '2025-10-27', titel: '🍂 Herbstferien Anfang', typ: 'ferien' },
+    { datum: '2025-11-01', titel: '🍂 Herbstferien Ende', typ: 'ferien' },
+    
+    // Allerheiligen
+    { datum: '2025-11-01', titel: '🪦 Allerheiligen', typ: 'feiertag' },
+    
+    // Weihnachtsferien Bayern 2024/2025
+    { datum: '2025-12-22', titel: '🎄 Weihnachtsferien Anfang', typ: 'ferien' },
+    { datum: '2026-01-10', titel: '🎄 Weihnachtsferien Ende', typ: 'ferien' },
+    
+    // Weihnachten
+    { datum: '2025-12-25', titel: '🎄 Weihnachtstag', typ: 'feiertag' },
+    { datum: '2025-12-26', titel: '🎄 Weihnachtstag II', typ: 'feiertag' },
+    { datum: '2025-12-31', titel: '🎆 Silvester', typ: 'feiertag' },
+];
+
 let currentCalendarDate = new Date();
 let selectedCalendarDate = null;
 let notesChartInstance = null;
@@ -273,6 +340,15 @@ function renderCalendar() {
                 // Add events for this day
                 const dayEvents = appData.termine.filter(t => t.datum.startsWith(dateStr));
                 const dayNotes = appData.noten.filter(n => n.datum === dateStr);
+                const dayFeiertag = augsburgerFeiertage.find(f => f.datum === dateStr);
+                
+                if (dayFeiertag) {
+                    const feiertag = document.createElement('div');
+                    feiertag.className = dayFeiertag.typ === 'ferien' ? 'calendar-day-ferien' : 'calendar-day-feiertag';
+                    feiertag.textContent = dayFeiertag.titel;
+                    feiertag.title = dayFeiertag.typ === 'ferien' ? 'Ferien' : 'Feiertag';
+                    cell.appendChild(feiertag);
+                }
                 
                 if (dayEvents.length > 0 || dayNotes.length > 0) {
                     const eventDiv = document.createElement('div');

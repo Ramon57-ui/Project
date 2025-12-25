@@ -633,6 +633,34 @@ main {
     white-space: nowrap;
 }
 
+.calendar-day-feiertag {
+    font-size: 0.65rem;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    margin-top: 0.15rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-left: 3px solid #d63031;
+}
+
+.calendar-day-ferien {
+    font-size: 0.65rem;
+    background-color: #ffd93d;
+    color: #333;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    margin-top: 0.15rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-left: 3px solid #f39c12;
+}
+
 .calendar-events {
     background-color: var(--bg-secondary);
     padding: 1rem;
