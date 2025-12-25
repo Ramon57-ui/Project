@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schulplaner Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>📚 Schulplaner Pro</h1>
+                    <div class="header-stats">
+                        <div class="stat-badge">
+                            <span class="badge-icon">📊</span>
+                            <span class="badge-text" id="headerAvg">-</span>
+                        </div>
+                        <div class="stat-badge">
+                            <span class="badge-icon">✅</span>
+                            <span class="badge-text" id="headerTasks">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Suchen...">
+                    <button id="exportBtn" class="btn-header" title="Daten exportieren">💾</button>
+                    <button id="darkModeBtn" class="btn-dark-mode">🌙</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">📌 Dashboard</button>
+            <button class="tab-btn" data-tab="kalender">📆 Kalender</button>
+            <button class="tab-btn" data-tab="noten">📊 Noten</button>
+            <button class="tab-btn" data-tab="notizen">📝 Notizen</button>
+            <button class="tab-btn" data-tab="fehlzeiten">⏰ Fehlzeiten</button>
+            <button class="tab-btn" data-tab="statistiken">📈 Statistiken</button>
+            <button class="tab-btn" data-tab="achievements">🏆 Achievements</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- DASHBOARD TAB -->
+            <section id="dashboard" class="tab-content active">
+                <h2>📌 Mein Dashboard</h2>
+                
+                <div class="dashboard-grid">
+                    <!-- Zusammenfassung -->
+                    <div class="card dashboard-card">
+                        <h3>📊 Meine Statistiken</h3>
+                        <div class="dashboard-stats">
+                            <div class="dashboard-stat">
+                                <div class="stat-circle">
+                                    <span id="dashAvg" class="stat-circle-value">-</span>
+                                </div>
+                                <p class="stat-circle-label">Durchschnitt</p>
+                            </div>
+                            <div class="dashboard-stat">
+                                <div class="stat-circle success">
+                                    <span id="dashNotes" class="stat-circle-value">0</span>
+                                </div>
+                                <p class="stat-circle-label">Noten</p>
+                            </div>
+                            <div class="dashboard-stat">
+                                <div class="stat-circle warning">
+                                    <span id="dashTerms" class="stat-circle-value">0</span>
+                                </div>
+                                <p class="stat-circle-label">Termine</p>
+                            </div>
+                            <div class="dashboard-stat">
+                                <div class="stat-circle danger">
+                                    <span id="dashAbsent" class="stat-circle-value">0h</span>
+                                </div>
+                                <p class="stat-circle-label">Fehlzeiten</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nächste Ereignisse -->
+                    <div class="card dashboard-card">
+                        <h3>⏰ Nächste Ereignisse</h3>
+                        <div id="dashboard-upcoming" class="dashboard-list"></div>
+                    </div>
+
+                    <!-- Ziele -->
+                    <div class="card dashboard-card">
+                        <h3>🎯 Meine Ziele</h3>
+                        <div class="goal-container">
+                            <div class="goal">
+                                <p>Durchschnittsnote erreichen</p>
+                                <input type="number" id="goalGrade" placeholder="z.B. 2.0" min="1" max="6" step="0.1">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="goalProgress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lernsträhne -->
+                    <div class="card dashboard-card">
+                        <h3>🔥 Lernsträhne</h3>
+                        <div id="streak-counter" class="streak-display">
+                            <p class="streak-number">0 🔥</p>
+                            <p class="streak-text">Tage in Folge</p>
+                        </div>
+                        <button id="streakBtn" class="btn btn-success">✅ Heute gelernt!</button>
+                    </div>
+                </div>
+            </section>
+            <section id="kalender" class="tab-content active">
+                <h2>📆 Schulkalender</h2>
+                <div class="card">
+                    <div class="calendar-header">
+                        <button id="prevMonth" class="btn btn-small">◀ Zurück</button>
+                        <h3 id="monthYear"></h3>
+                        <button id="nextMonth" class="btn btn-small">Weiter ▶</button>
+                    </div>
+                    <div class="calendar-wrapper">
+                        <table class="calendar-table">
+                            <thead>
+                                <tr>
+                                    <th>Mo</th>
+                                    <th>Di</th>
+                                    <th>Mi</th>
+                                    <th>Do</th>
+                                    <th>Fr</th>
+                                    <th>Sa</th>
+                                    <th>So</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendar-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>� Termin für ausgewähltes Datum hinzufügen</h3>
+                    <div class="form-group">
+                        <input type="text" id="selectedDateDisplay" placeholder="Klicke auf einen Tag im Kalender" class="input" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="terminInput" placeholder="Termintitel (z.B. Mathetest)" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="time" id="terminTimeInput" class="input" placeholder="Zeit">
+                    </div>
+                    <div class="form-group">
+                        <select id="terminTypInput" class="input">
+                            <option value="prüfung">📋 Prüfung</option>
+                            <option value="hausaufgabe">📝 Hausaufgabe</option>
+                            <option value="projekt">🎯 Projekt</option>
+                            <option value="sonstiges">📌 Sonstiges</option>
+                        </select>
+                    </div>
+                    <button id="addTerminBtn" class="btn btn-primary">✅ Termin speichern</button>
+                </div>
+
+                <div class="card">
+                    <h3>📌 Ereignisse für ausgewählten Tag</h3>
+                    <div id="calendar-events" class="calendar-events"></div>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Alle anstehenden Termine</h3>
+                    <div id="termine-list" class="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- NOTEN TAB -->
+            <section id="noten" class="tab-content">
+                <h2>📊 Notenverwaltung</h2>
+                <div class="card">
+                    <h3>Note hinzufügen</h3>
+                    <div class="form-group">
+                        <input type="text" id="fachInput" placeholder="Fach (z.B. Mathematik)" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="noteInput" placeholder="Note (1.0 - 6.0)" min="1" max="6" step="0.1" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" id="datumInput" class="input">
+                    </div>
+                    <button id="addNoteBtn" class="btn btn-primary">✅ Note speichern</button>
+                </div>
+
+                <div class="card">
+                    <h3>Meine Noten</h3>
+                    <div id="noten-list" class="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- TERMINE TAB - HIDDEN -->
+            <section id="termine" class="tab-content" style="display: none;">
+                <!-- This section is now integrated into the calendar tab -->
+            </section>
+
+            <!-- NOTIZEN TAB -->
+            <section id="notizen" class="tab-content">
+                <h2>📝 Notizen & Notizen</h2>
+                <div class="card">
+                    <h3>Neue Notiz</h3>
+                    <div class="form-group">
+                        <input type="text" id="notizTitelInput" placeholder="Titel" class="input">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="notizTextInput" placeholder="Notiz-Text..." class="textarea" rows="4"></textarea>
+                    </div>
+                    <button id="addNotizBtn" class="btn btn-primary">✅ Notiz speichern</button>
+                </div>
+
+                <div class="card">
+                    <h3>Meine Notizen</h3>
+                    <div id="notizen-list" class="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- FEHLZEITEN TAB -->
+            <section id="fehlzeiten" class="tab-content">
+                <h2>⏰ Fehlzeiten</h2>
+                <div class="card">
+                    <h3>Fehlzeit eintragen</h3>
+                    <div class="form-group">
+                        <input type="date" id="fehlzeitDatumInput" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="fehlzeitStundenInput" placeholder="Stunden" min="0" max="12" step="0.5" class="input">
+                    </div>
+                    <div class="form-group">
+                        <select id="fehlzeitArtInput" class="input">
+                            <option value="krank">🤒 Krank</option>
+                            <option value="zahn">🦷 Zahnarzt</option>
+                            <option value="arzt">🏥 Arzt</option>
+                            <option value="urlaub">🏖️ Urlaub</option>
+                            <option value="sonstiges">❓ Sonstiges</option>
+                        </select>
+                    </div>
+                    <button id="addFehlzeitBtn" class="btn btn-primary">✅ Fehlzeit speichern</button>
+                </div>
+
+                <div class="card">
+                    <h3>Fehlzeiten-Übersicht</h3>
+                    <p id="fehlzeiten-summary" class="summary">Gesamtfehlzeiten: <strong>0 Stunden</strong></p>
+                    <div id="fehlzeiten-list" class="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- STATISTIKEN TAB -->
+            <section id="statistiken" class="tab-content">
+                <h2>📈 Statistiken & Auswertungen</h2>
+                <div class="card">
+                    <h3>Notendurchschnitt pro Fach</h3>
+                    <canvas id="notesChart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="card">
+                    <h3>Zusammenfassung</h3>
+                    <div id="stats-summary" class="stats-grid">
+                        <div class="stat-box">
+                            <p class="stat-label">Durchschnittsnote</p>
+                            <p class="stat-value" id="avgGrade">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="stat-label">Beste Note</p>
+                            <p class="stat-value" id="bestGrade">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="stat-label">Schlechteste Note</p>
+                            <p class="stat-value" id="worstGrade">-</p>
+                        </div>
+                        <div class="stat-box">
+                            <p class="stat-label">Noten gesamt</p>
+                            <p class="stat-value" id="totalGrades">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ACHIEVEMENTS TAB -->
+            <section id="achievements" class="tab-content">
+                <h2>🏆 Achievements & Erfolge</h2>
+                <button id="learningDayBtn" class="btn btn-success">🚀 Lerntag aktivieren!</button>
+                <p id="learning-day-status" class="status-message"></p>
+
+                <div class="card">
+                    <h3>Deine Erfolge</h3>
+                    <div id="achievements-list" class="achievements-grid"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>📚 Schulplaner Pro v1.0 | Dein digitaler Schulassistent</p>
+            <button id="clearDataBtn" class="btn btn-danger btn-small">🗑️ Alle Daten löschen</button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
