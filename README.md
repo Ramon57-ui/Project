@@ -1,4 +1,4 @@
-# 📚 Schulplaner Pro - Dokumentation
+# 📚 Schulplaner 2025/2026 - Dokumentation
 
 Eine moderne Web-Anwendung zur Verwaltung von Schulnoten, Terminen, Notizen und Fehlzeiten mit motivierenden Features.
 

@@ -27,7 +27,7 @@
   },
   "build": {
     "appId": "com.schulplaner.pro",
-    "productName": "Schulplaner Pro",
+    "productName": "Schulplaner 2025/2026",
     "files": [
       "main.js",
       "preload.js",

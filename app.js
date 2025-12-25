@@ -63,7 +63,7 @@ const achievementsData = [
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Schulplaner Pro geladen! 📚');
+    console.log('Schulplaner 2025/2026 geladen! 📚');
     
     // Load data from localStorage
     loadData();
