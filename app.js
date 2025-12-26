@@ -5,10 +5,19 @@ const appData = {
     notizen: [],
     fehlzeiten: [],
     achievements: [],
+    pruefungen: [],
     learningDayActive: false,
     streak: 0,
     lastStreakDate: null,
-    goalGrade: 2.0
+    goalGrade: 2.0,
+    // XP & LEVEL SYSTEM
+    xp: 0,
+    level: 1,
+    totalXpEarned: 0,
+    learningDaysCount: 0,
+    notificationsEnabled: false,
+    // SUBJECT GOALS
+    subjectGoals: []
 };
 
 // ===== AUGSBURGER FEIERTAGE & FERIEN 2025 =====
@@ -89,44 +98,129 @@ const achievementsData = [
         icon: '⭐',
         title: 'Fleißig',
         description: '5 Noten eingetragen',
-        unlocked: false
+        unlocked: false,
+        xpReward: 50
     },
     {
         id: 2,
         icon: '🎯',
         title: 'Perfektionist',
         description: 'Eine Note 1.0 erreicht',
-        unlocked: false
+        unlocked: false,
+        xpReward: 100
     },
     {
         id: 3,
         icon: '📚',
         title: 'Gelehrter',
         description: '10 Noten eingetragen',
-        unlocked: false
+        unlocked: false,
+        xpReward: 100
     },
     {
         id: 4,
         icon: '🏆',
         title: 'Durchschnittler',
         description: 'Durchschnittsnote unter 2.5',
-        unlocked: false
+        unlocked: false,
+        xpReward: 150
     },
     {
         id: 5,
         icon: '📝',
         title: 'Notiz-Experte',
         description: '5 Notizen erstellt',
-        unlocked: false
+        unlocked: false,
+        xpReward: 50
     },
     {
         id: 6,
         icon: '🚀',
         title: 'Lerntag-Aktivierer',
         description: 'Lerntag 3x aktiviert',
-        unlocked: false
+        unlocked: false,
+        xpReward: 75
+    },
+    {
+        id: 7,
+        icon: '🔥',
+        title: 'Strähnen-König',
+        description: '7 Tage Lernsträhne',
+        unlocked: false,
+        xpReward: 200
+    },
+    {
+        id: 8,
+        icon: '📅',
+        title: 'Terminator',
+        description: '10 Termine erstellt',
+        unlocked: false,
+        xpReward: 75
+    },
+    {
+        id: 9,
+        icon: '🎓',
+        title: 'Prüfungs-Profi',
+        description: '5 Prüfungen eingetragen',
+        unlocked: false,
+        xpReward: 100
+    },
+    {
+        id: 10,
+        icon: '💪',
+        title: 'Level 5 Erreicht',
+        description: 'Erreiche Level 5',
+        unlocked: false,
+        xpReward: 250
+    },
+    {
+        id: 11,
+        icon: '🌟',
+        title: 'Level 10 Erreicht',
+        description: 'Erreiche Level 10',
+        unlocked: false,
+        xpReward: 500
+    },
+    {
+        id: 12,
+        icon: '👑',
+        title: 'Level-Meister',
+        description: 'Erreiche Level 15',
+        unlocked: false,
+        xpReward: 1000
     }
 ];
+
+// ===== LEVEL SYSTEM DEFINITIONS =====
+const levelTitles = {
+    1: 'Schulanfänger',
+    2: 'Lernender',
+    3: 'Fleißiger Schüler',
+    4: 'Aufsteiger',
+    5: 'Wissenssammler',
+    6: 'Bücherwurm',
+    7: 'Strebsamer',
+    8: 'Gelehrter',
+    9: 'Akademiker',
+    10: 'Experte',
+    11: 'Meister',
+    12: 'Professor',
+    13: 'Großmeister',
+    14: 'Legende',
+    15: 'Champion',
+    16: 'Ultra-Champion',
+    17: 'Mythisch',
+    18: 'Göttlich',
+    19: 'Unsterblich',
+    20: 'Omniszient'
+};
+
+// XP needed for each level (cumulative)
+function getXPForLevel(level) {
+    if (level <= 1) return 0;
+    // Exponential growth: Level 2 = 100, Level 3 = 250, Level 4 = 450, etc.
+    return Math.floor(50 * Math.pow(level, 2));
+}
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -147,6 +241,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calendar setup
     setupCalendar();
     
+    // Level System setup
+    updateLevelDisplay();
+    
+    // Notifications setup
+    setupNotifications();
+    
     // Initial render
     renderCalendar();
     renderNotes();
@@ -155,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderFehlzeiten();
     renderAchievements();
     renderDashboard();
+    renderSubjectGoals();
     updateStatistics();
     checkAchievements();
 });
@@ -261,9 +362,17 @@ function setupEventListeners() {
     // Search
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.addEventListener('input', filterContent);
+    
+    // Subject Goals
+    const addSubjectGoalBtn = document.getElementById('addSubjectGoalBtn');
+    const subjectGoalFach = document.getElementById('subjectGoalFach');
+    if (addSubjectGoalBtn) addSubjectGoalBtn.addEventListener('click', addSubjectGoal);
+    if (subjectGoalFach) subjectGoalFach.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addSubjectGoal();
+    });
 }
 
-// ===== CALENDAR SETUP =====
+// ===== CALENDAR SETUP - PREMIUM EDITION =====
 function setupCalendar() {
     const prevMonth = document.getElementById('prevMonth');
     const nextMonth = document.getElementById('nextMonth');
@@ -271,20 +380,20 @@ function setupCalendar() {
     if (prevMonth) {
         prevMonth.addEventListener('click', () => {
             currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-            renderCalendar();
+            renderCalendarPremium();
         });
     }
     
     if (nextMonth) {
         nextMonth.addEventListener('click', () => {
             currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-            renderCalendar();
+            renderCalendarPremium();
         });
     }
 }
 
-// ===== CALENDAR FUNCTIONS =====
-function renderCalendar() {
+// ===== PREMIUM CALENDAR FUNCTIONS =====
+function renderCalendarPremium() {
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
     
@@ -292,8 +401,13 @@ function renderCalendar() {
     const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
                         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
     const monthYearEl = document.getElementById('monthYear');
+    const yearDisplay = document.getElementById('yearDisplay');
+    
     if (monthYearEl) {
-        monthYearEl.textContent = `${monthNames[month]} ${year}`;
+        monthYearEl.textContent = monthNames[month];
+    }
+    if (yearDisplay) {
+        yearDisplay.textContent = year;
     }
     
     // Get first day of month and number of days
@@ -312,89 +426,72 @@ function renderCalendar() {
     let dayCounter = 1;
     let nextMonthCounter = 1;
     
-    for (let week = 0; week < 6; week++) {
-        const row = document.createElement('tr');
+    // Previous month days
+    for (let i = startDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day other-month';
+        dayDiv.textContent = day;
+        calendarBody.appendChild(dayDiv);
+    }
+    
+    // Current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        for (let day = 0; day < 7; day++) {
-            const cell = document.createElement('td');
-            
-            if (week === 0 && day < startDay) {
-                // Previous month days
-                cell.textContent = daysInPrevMonth - startDay + day + 1;
-                cell.classList.add('other-month');
-            } else if (dayCounter <= daysInMonth) {
-                // Current month days
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayCounter).padStart(2, '0')}`;
-                const today = new Date();
-                
-                const div = document.createElement('div');
-                div.className = 'calendar-day-number';
-                div.textContent = dayCounter;
-                cell.appendChild(div);
-                
-                // Check if today
-                if (year === today.getFullYear() && month === today.getMonth() && dayCounter === today.getDate()) {
-                    cell.classList.add('today');
-                }
-                
-                // Add events for this day
-                const dayEvents = appData.termine.filter(t => t.datum.startsWith(dateStr));
-                const dayNotes = appData.noten.filter(n => n.datum === dateStr);
-                const dayFeiertag = augsburgerFeiertage.find(f => f.datum === dateStr);
-                
-                if (dayFeiertag) {
-                    const feiertag = document.createElement('div');
-                    feiertag.className = dayFeiertag.typ === 'ferien' ? 'calendar-day-ferien' : 'calendar-day-feiertag';
-                    feiertag.textContent = dayFeiertag.titel;
-                    feiertag.title = dayFeiertag.typ === 'ferien' ? 'Ferien' : 'Feiertag';
-                    cell.appendChild(feiertag);
-                }
-                
-                if (dayEvents.length > 0 || dayNotes.length > 0) {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'calendar-day-event';
-                    if (dayEvents.length > 0) {
-                        eventDiv.textContent = `📅 ${dayEvents.length}`;
-                    } else if (dayNotes.length > 0) {
-                        eventDiv.textContent = `📊 ${dayNotes.length}`;
-                    }
-                    cell.appendChild(eventDiv);
-                }
-                
-                // Click handler
-                cell.style.cursor = 'pointer';
-                cell.addEventListener('click', () => {
-                    selectedCalendarDate = dateStr;
-                    document.querySelectorAll('.calendar-table td').forEach(c => c.classList.remove('selected'));
-                    cell.classList.add('selected');
-                    showCalendarEvents(dateStr);
-                });
-                
-                dayCounter++;
-            } else {
-                // Next month days
-                cell.textContent = nextMonthCounter;
-                cell.classList.add('other-month');
-                nextMonthCounter++;
-            }
-            
-            row.appendChild(cell);
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        
+        // Check if today
+        if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+            dayDiv.classList.add('selected');
         }
         
-        calendarBody.appendChild(row);
+        // Check for Feiertag/Ferien
+        const feiertag = augsburgerFeiertage.find(f => f.datum === dateStr);
+        if (feiertag) {
+            dayDiv.classList.add(feiertag.typ === 'ferien' ? 'vacation' : 'holiday');
+            dayDiv.title = feiertag.titel;
+        }
         
-        if (dayCounter > daysInMonth) break;
+        // Check for events
+        const dayEvents = appData.termine.filter(t => t.datum.startsWith(dateStr));
+        if (dayEvents.length > 0) {
+            dayDiv.classList.add('has-event');
+        }
+        
+        dayDiv.textContent = day;
+        
+        // Click handler
+        dayDiv.addEventListener('click', () => {
+            selectedCalendarDate = dateStr;
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+            dayDiv.classList.add('selected');
+            showCalendarEvents(dateStr);
+        });
+        
+        calendarBody.appendChild(dayDiv);
+        dayCounter++;
     }
+    
+    // Next month days
+    for (let i = 1; dayCounter % 7 !== 1 && i <= 7; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day other-month';
+        dayDiv.textContent = i;
+        calendarBody.appendChild(dayDiv);
+        dayCounter++;
+    }
+    
+    renderTermineList();
 }
 
 function showCalendarEvents(dateStr) {
-    const eventsDiv = document.getElementById('calendar-events');
     const selectedDateDisplay = document.getElementById('selectedDateDisplay');
     
-    if (!eventsDiv) return;
-    
     // Update the selected date display field
-    const date = new Date(dateStr);
+    const date = new Date(dateStr + 'T00:00:00');
     const dateStr2 = date.toLocaleDateString('de-DE', {
         weekday: 'long',
         year: 'numeric',
@@ -406,45 +503,50 @@ function showCalendarEvents(dateStr) {
         selectedDateDisplay.value = dateStr2;
     }
     
-    const termine = appData.termine.filter(t => t.datum.startsWith(dateStr));
-    const noten = appData.noten.filter(n => n.datum === dateStr);
+    renderTermineList();
+}
+
+function renderTermineList() {
+    const termine = appData.termine.slice().sort((a, b) => new Date(a.datum) - new Date(b.datum));
+    const upcomingTermine = termine.filter(t => new Date(t.datum) >= new Date());
     
-    let html = `<strong>${dateStr2}</strong>`;
-    
-    if (termine.length === 0 && noten.length === 0) {
-        html += '<div class="calendar-events-empty">Keine Ereignisse an diesem Tag</div>';
-    } else {
-        // Show termine
-        termine.forEach(t => {
-            const time = t.datum.substring(11, 16);
-            const typEmoji = {
-                'prüfung': '📋',
-                'hausaufgabe': '📝',
-                'projekt': '🎯',
-                'sonstiges': '📌'
-            }[t.typ] || '📌';
-            
-            html += `
-                <div class="calendar-event-item">
-                    <div class="calendar-event-title">${typEmoji} ${t.titel}</div>
-                    <div class="calendar-event-type">🕐 ${time} Uhr ${t.fertig ? '✅ Fertig' : '⏳ Offen'}</div>
+    // Upcoming events
+    const eventsDiv = document.getElementById('calendar-events');
+    if (eventsDiv) {
+        if (upcomingTermine.length === 0) {
+            eventsDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">📭 Keine anstehenden Termine</p>';
+        } else {
+            eventsDiv.innerHTML = upcomingTermine.slice(0, 5).map(t => `
+                <div class="event-item-premium ${t.typ}">
+                    <div>
+                        <strong>${t.titel}</strong>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">
+                            ${new Date(t.datum).toLocaleDateString('de-DE')}
+                            ${t.datum.includes('T') ? ' um ' + t.datum.split('T')[1].substring(0, 5) : ''}
+                        </p>
+                    </div>
+                    <button class="event-delete-btn" onclick="deleteTermin(${t.id})">🗑️</button>
                 </div>
-            `;
-        });
-        
-        // Show noten
-        noten.forEach(n => {
-            const borderColor = n.note <= 2.0 ? '#27ae60' : n.note <= 3.5 ? '#f39c12' : '#e74c3c';
-            html += `
-                <div class="calendar-event-item" style="border-left-color: ${borderColor};">
-                    <div class="calendar-event-title">📊 ${n.fach}</div>
-                    <div class="calendar-event-type" style="color: ${borderColor}; font-weight: bold; font-size: 1rem;">Note: ${n.note.toFixed(1)}</div>
-                </div>
-            `;
-        });
+            `).join('');
+        }
     }
     
-    eventsDiv.innerHTML = html;
+    // All events table
+    const termineList = document.getElementById('termine-list');
+    if (termineList) {
+        if (termine.length === 0) {
+            termineList.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">📭 Keine Termine eingetragen</p>';
+        } else {
+            termineList.innerHTML = termine.map(t => `
+                <div class="event-table-item">
+                    <div class="event-date">${new Date(t.datum).toLocaleDateString('de-DE', {month: 'short', day: 'numeric'})}</div>
+                    <div><strong>${t.titel}</strong></div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">${t.typ}</div>
+                    <button class="event-delete-btn" onclick="deleteTermin(${t.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+    }
 }
 
 // ===== NOTEN FUNCTIONS =====
@@ -460,7 +562,7 @@ function addNote() {
     const datum = datumInput.value;
     
     if (!fach || isNaN(note) || !datum || note < 1 || note > 6) {
-        alert('⚠️ Bitte alle Felder korrekt ausfüllen! Note muss zwischen 1 und 6 liegen.');
+        console.warn('Bitte alle Felder korrekt ausfüllen! Note muss zwischen 1 und 6 liegen.');
         return;
     }
     
@@ -470,6 +572,10 @@ function addNote() {
         note: note,
         datum: datum
     });
+    
+    // Award XP for adding a note
+    const xpReward = note <= 2 ? 50 : note <= 3 ? 40 : note <= 4 ? 30 : 20;
+    addXP(xpReward, `Neue Note: ${note} in ${fach}`);
     
     // Clear inputs
     fachInput.value = '';
@@ -542,6 +648,7 @@ function addTermin() {
     const selectedDateDisplay = document.getElementById('selectedDateDisplay');
     const terminTimeInput = document.getElementById('terminTimeInput');
     const terminTypInput = document.getElementById('terminTypInput');
+    const terminPriorityInput = document.getElementById('terminPriorityInput');
     
     if (!terminInput || !selectedDateDisplay || !terminTypInput) return;
     
@@ -549,9 +656,10 @@ function addTermin() {
     const selectedDate = selectedDateDisplay.value;
     const time = terminTimeInput.value || '12:00';
     const typ = terminTypInput.value;
+    const priority = terminPriorityInput ? terminPriorityInput.value : 'medium';
     
     if (!titel || !selectedDate) {
-        alert('⚠️ Bitte einen Termintitel eingeben und ein Datum im Kalender auswählen!');
+        console.warn('Bitte einen Termintitel eingeben und ein Datum im Kalender auswählen!');
         return;
     }
     
@@ -563,21 +671,25 @@ function addTermin() {
         titel: titel,
         datum: datum,
         typ: typ,
-        fertig: false
+        fertig: false,
+        priority: priority
     });
+    
+    // Award XP for adding a term
+    addXP(30, `Neuer Termin: ${titel}`);
     
     // Clear inputs
     terminInput.value = '';
     terminTimeInput.value = '';
     selectedDateDisplay.value = '';
+    if (terminPriorityInput) terminPriorityInput.value = 'medium';
     selectedCalendarDate = null;
     
     saveData();
     renderTermine();
     renderCalendar();
     renderDashboard();
-    
-    alert('✅ Termin gespeichert!');
+    checkAchievements();
 }
 
 function deleteTermin(id) {
@@ -609,8 +721,13 @@ function renderTermine() {
         return;
     }
     
-    // Sort by date
-    const sorted = [...appData.termine].sort((a, b) => new Date(a.datum) - new Date(b.datum));
+    // Sort by priority first, then by date
+    const sorted = [...appData.termine].sort((a, b) => {
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        const pDiff = (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+        if (pDiff !== 0) return pDiff;
+        return new Date(a.datum) - new Date(b.datum);
+    });
     
     sorted.forEach(termin => {
         const terminDiv = document.createElement('div');
@@ -636,10 +753,19 @@ function renderTermine() {
             'sonstiges': '📌'
         }[termin.typ] || '📌';
         
+        // Priority badge
+        const priorityBadges = {
+            high: '<span class="priority-badge priority-high">🔴 Hoch</span>',
+            medium: '<span class="priority-badge priority-medium">🟡 Mittel</span>',
+            low: '<span class="priority-badge priority-low">🟢 Niedrig</span>'
+        };
+        const priorityBadge = priorityBadges[termin.priority] || priorityBadges.medium;
+        
         terminDiv.innerHTML = `
             <div class="item-content">
                 <strong>${typEmoji} ${termin.titel}</strong>
                 <p class="meta">📅 ${date}</p>
+                ${priorityBadge}
             </div>
             <div class="item-actions">
                 <button class="btn-delete" onclick="toggleTermin(${termin.id})">
@@ -664,7 +790,7 @@ function addNotiz() {
     const text = notizTextInput.value.trim();
     
     if (!titel || !text) {
-        alert('⚠️ Bitte Titel und Text ausfüllen!');
+        console.warn('Bitte Titel und Text ausfüllen!');
         return;
     }
     
@@ -674,6 +800,9 @@ function addNotiz() {
         text: text,
         datum: new Date().toLocaleDateString('de-DE')
     });
+    
+    // Award XP for adding a note
+    addXP(25, `Neue Notiz: ${titel}`);
     
     // Clear inputs
     notizTitelInput.value = '';
@@ -949,26 +1078,30 @@ function checkAchievements() {
 }
 
 function renderAchievements() {
-    const grid = document.getElementById('achievements-list');
+    // Try both old and new container IDs
+    const grid = document.getElementById('achievementsGrid') || document.getElementById('achievements-list');
     if (!grid) return;
     
     grid.innerHTML = '';
     
     achievementsData.forEach(achievement => {
         const achievementDiv = document.createElement('div');
-        achievementDiv.className = 'achievement';
+        achievementDiv.className = 'achievement-badge';
         
         if (achievement.unlocked) {
             achievementDiv.classList.add('unlocked');
+        } else {
+            achievementDiv.classList.add('locked');
         }
         
         achievementDiv.innerHTML = `
             <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-title">${achievement.title}</div>
-            <div class="achievement-desc">${achievement.description}</div>
+            <div class="achievement-name">${achievement.title}</div>
+            <div class="achievement-description">${achievement.description}</div>
+            ${achievement.xpReward ? `<div class="achievement-xp">+${achievement.xpReward} XP</div>` : ''}
         `;
         
-        achievementDiv.title = achievement.unlocked ? 'Freigeschaltet! ✅' : 'Noch nicht freigeschaltet';
+        achievementDiv.title = achievement.unlocked ? `✅ ${achievement.title} - Freigeschaltet!` : `🔒 ${achievement.description}`;
         
         grid.appendChild(achievementDiv);
     });
@@ -982,6 +1115,10 @@ function activateLearningDay() {
         let count = parseInt(localStorage.getItem('learningDayCount') || '0');
         count++;
         localStorage.setItem('learningDayCount', count);
+        appData.learningDaysCount = count;
+        
+        // Award XP for activating learning day
+        addXP(50, `Lerntag aktiviert! Tag ${count}`);
         
         const status = document.getElementById('learning-day-status');
         if (status) {
@@ -1012,6 +1149,102 @@ function activateLearningDay() {
     checkAchievements();
 }
 
+// ===== SUBJECT GOALS FUNCTIONS =====
+function addSubjectGoal() {
+    const fachInput = document.getElementById('subjectGoalFach');
+    const gradeInput = document.getElementById('subjectGoalGrade');
+    
+    if (!fachInput || !gradeInput) return;
+    
+    const fach = fachInput.value.trim();
+    const goalGrade = parseFloat(gradeInput.value);
+    
+    if (!fach || isNaN(goalGrade) || goalGrade < 1 || goalGrade > 6) {
+        console.warn('Bitte Fach und eine gültige Note (1-6) eingeben!');
+        return;
+    }
+    
+    // Check if goal already exists
+    const exists = appData.subjectGoals.some(g => g.fach.toLowerCase() === fach.toLowerCase());
+    if (exists) {
+        console.warn('Du hast bereits ein Ziel für ' + fach + ' gesetzt!');
+        return;
+    }
+    
+    appData.subjectGoals.push({
+        id: Date.now(),
+        fach: fach,
+        targetGrade: goalGrade,
+        createdDate: new Date().toISOString()
+    });
+    
+    // Award XP for setting a goal
+    addXP(25, `Lernziel gesetzt: ${fach}`);
+    
+    // Clear inputs
+    fachInput.value = '';
+    gradeInput.value = '';
+    
+    saveData();
+    renderSubjectGoals();
+    updateStatistics();
+}
+
+function deleteSubjectGoal(id) {
+    appData.subjectGoals = appData.subjectGoals.filter(g => g.id !== id);
+    saveData();
+    renderSubjectGoals();
+    updateStatistics();
+}
+
+function renderSubjectGoals() {
+    const list = document.getElementById('subject-goals-list');
+    if (!list) return;
+    
+    list.innerHTML = '';
+    
+    if (appData.subjectGoals.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 1rem;">Noch keine Fach-Ziele gesetzt 📚</p>';
+        return;
+    }
+    
+    appData.subjectGoals.forEach(goal => {
+        // Calculate current grade for this subject
+        const subjectNotes = appData.noten.filter(n => n.fach.toLowerCase() === goal.fach.toLowerCase());
+        const currentGrade = subjectNotes.length > 0 
+            ? (subjectNotes.reduce((a, b) => a + b.note, 0) / subjectNotes.length).toFixed(2)
+            : '-';
+        
+        const isAchieved = currentGrade !== '-' && parseFloat(currentGrade) <= goal.targetGrade;
+        const progress = currentGrade !== '-' ? Math.min(((goal.targetGrade / parseFloat(currentGrade)) * 100), 100) : 0;
+        
+        const goalDiv = document.createElement('div');
+        goalDiv.className = 'subject-goal-item' + (isAchieved ? ' achieved' : '');
+        
+        const achievementBadge = isAchieved ? '<div class="goal-achievement-badge">✨</div>' : '';
+        
+        goalDiv.innerHTML = `
+            ${achievementBadge}
+            <div class="subject-goal-header">
+                <span class="subject-goal-name">${goal.fach}</span>
+                <span class="subject-goal-target">Ziel: ${goal.targetGrade.toFixed(1)}</span>
+            </div>
+            <div class="subject-goal-current">
+                Aktuell: <strong>${currentGrade !== '-' ? currentGrade : 'Noch keine Noten'}</strong>
+                ${currentGrade !== '-' ? `(${subjectNotes.length} Noten)` : ''}
+            </div>
+            <div class="subject-goal-progress">
+                <div class="subject-goal-progress-fill" style="width: ${progress}%"></div>
+            </div>
+            <div class="subject-goal-actions">
+                <button class="goal-delete" onclick="deleteSubjectGoal(${goal.id})">🗑️ Löschen</button>
+            </div>
+        `;
+        
+        list.appendChild(goalDiv);
+    });
+}
+
 // ===== DATA PERSISTENCE =====
 function saveData() {
     try {
@@ -1033,29 +1266,36 @@ function loadData() {
 }
 
 function clearAllData() {
-    if (confirm('⚠️ Wirklich ALLE Daten löschen? Dies kann nicht rückgängig gemacht werden!')) {
-        appData.noten = [];
-        appData.termine = [];
-        appData.notizen = [];
-        appData.fehlzeiten = [];
-        appData.learningDayActive = false;
-        appData.streak = 0;
-        appData.lastStreakDate = null;
-        localStorage.setItem('learningDayCount', '0');
-        
-        saveData();
-        
-        renderNotes();
-        renderTermine();
-        renderNotizen();
-        renderFehlzeiten();
-        renderAchievements();
-        updateStatistics();
-        checkAchievements();
-        renderDashboard();
-        
-        alert('✅ Alle Daten wurden gelöscht.');
-    }
+    // Auto-clear without confirmation
+    appData.noten = [];
+    appData.termine = [];
+    appData.notizen = [];
+    appData.fehlzeiten = [];
+    appData.learningDayActive = false;
+    appData.streak = 0;
+    appData.lastStreakDate = null;
+    appData.xp = 0;
+    appData.level = 1;
+    appData.totalXpEarned = 0;
+    appData.learningDaysCount = 0;
+    appData.subjectGoals = [];
+    localStorage.setItem('learningDayCount', '0');
+    
+    // Reset achievements
+    achievementsData.forEach(a => a.unlocked = false);
+    
+    saveData();
+    
+    renderNotes();
+    renderTermine();
+    renderNotizen();
+    renderFehlzeiten();
+    renderAchievements();
+    updateStatistics();
+    checkAchievements();
+    renderDashboard();
+    updateLevelDisplay();
+    renderSubjectGoals();
 }
 
 // ===== DASHBOARD FUNCTIONS =====
@@ -1150,6 +1390,11 @@ function updateStreak() {
         }
         
         appData.lastStreakDate = today;
+        
+        // Award XP for streak
+        const streakXP = appData.streak * 10;
+        addXP(streakXP, `Lernsträhne: ${appData.streak} Tage`);
+        
         saveData();
         
         const streakBtn = document.getElementById('streakBtn');
@@ -1162,9 +1407,17 @@ function updateStreak() {
                 streakBtn.disabled = false;
             }, 2000);
         }
+    } else {
+        // Already tracked today
+        const streakBtn = document.getElementById('streakBtn');
+        if (streakBtn) {
+            streakBtn.textContent = '✅ Bereits heute eingetragen!';
+        }
     }
     
     updateStreakDisplay();
+    renderDashboard();
+    updateLevelDisplay();
     checkAchievements();
 }
 
@@ -1206,8 +1459,6 @@ function exportData() {
     link.download = `schulplaner-export-${new Date().getTime()}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    
-    alert('✅ Daten exportiert!');
 }
 
 // ===== SEARCH FUNCTIONALITY =====
@@ -1473,10 +1724,647 @@ function toggleSign() {
     }
 }
 
+// ===== SEARCH FUNCTION =====
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+let selectedResultIndex = -1;
+
+function performSearch(query) {
+    if (!query.trim()) {
+        searchResults.classList.remove('active');
+        searchResults.innerHTML = '';
+        selectedResultIndex = -1;
+        return;
+    }
+
+    const query_lower = query.toLowerCase();
+    const results = [];
+
+    // Suche in Tab-Namen
+    const tabs = [
+        { name: 'dashboard', label: 'Dashboard', icon: '📌' },
+        { name: 'kalender', label: 'Kalender', icon: '📆' },
+        { name: 'noten', label: 'Noten', icon: '📊' },
+        { name: 'notizen', label: 'Notizen', icon: '📝' },
+        { name: 'lernzeit', label: 'Lern Zeit', icon: '⏱️' },
+        { name: 'rechner', label: 'Rechner', icon: '🧮' },
+        { name: 'statistiken', label: 'Statistiken', icon: '📈' }
+    ];
+
+    tabs.forEach(tab => {
+        if (tab.name.toLowerCase().includes(query_lower) || 
+            tab.label.toLowerCase().includes(query_lower)) {
+            results.push({
+                title: tab.label,
+                icon: tab.icon,
+                tab: tab.name,
+                meta: 'Direkter Zugriff',
+                isTab: true
+            });
+        }
+    });
+
+    // Suche in Noten
+    if (appData.noten && appData.noten.length > 0) {
+        appData.noten.forEach(note => {
+            if (note.fach.toLowerCase().includes(query_lower) || 
+                note.note.toString().includes(query_lower)) {
+                results.push({
+                    title: `${note.fach} - ${note.note}`,
+                    icon: '📊',
+                    tab: 'noten',
+                    meta: note.datum
+                });
+            }
+        });
+    }
+
+    // Suche in Terminen
+    if (appData.termine && appData.termine.length > 0) {
+        appData.termine.forEach(termin => {
+            if (termin.title.toLowerCase().includes(query_lower) || 
+                termin.description.toLowerCase().includes(query_lower)) {
+                results.push({
+                    title: termin.title,
+                    icon: '📅',
+                    tab: 'kalender',
+                    meta: termin.datum
+                });
+            }
+        });
+    }
+
+    // Suche in Notizen
+    if (appData.notizen && appData.notizen.length > 0) {
+        appData.notizen.forEach(notiz => {
+            if (notiz.title.toLowerCase().includes(query_lower) || 
+                notiz.content.toLowerCase().includes(query_lower)) {
+                results.push({
+                    title: notiz.title,
+                    icon: '📝',
+                    tab: 'notizen',
+                    meta: notiz.content.substring(0, 30) + '...'
+                });
+            }
+        });
+    }
+
+    selectedResultIndex = -1;
+    displaySearchResults(results);
+}
+
+function displaySearchResults(results) {
+    searchResults.innerHTML = '';
+
+    if (results.length === 0) {
+        searchResults.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">Keine Ergebnisse gefunden</div>';
+        searchResults.classList.add('active');
+        return;
+    }
+
+    results.forEach((result, index) => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.dataset.index = index;
+        item.innerHTML = `
+            <div class="search-result-icon">${result.icon}</div>
+            <div class="search-result-content">
+                <div class="search-result-title">${result.title}</div>
+                <div class="search-result-meta">${result.meta}</div>
+            </div>
+            ${result.isTab ? '<div class="search-result-tab" style="background: #10b981;">Seite</div>' : '<div class="search-result-tab">' + getTabLabel(result.tab) + '</div>'}
+        `;
+        item.onclick = () => {
+            switchToTab(result.tab);
+            searchInput.value = '';
+        };
+        item.onmouseenter = () => {
+            selectedResultIndex = index;
+            updateSelectedResult();
+        };
+        searchResults.appendChild(item);
+    });
+
+    // Automatisch erstes Ergebnis auswählen
+    selectedResultIndex = 0;
+    updateSelectedResult();
+    searchResults.classList.add('active');
+}
+
+function getTabLabel(tab) {
+    const labels = {
+        'noten': '📊 Noten',
+        'kalender': '📆 Kalender',
+        'notizen': '📝 Notizen',
+        'lernzeit': '⏱️ Lern Zeit',
+        'statistiken': '📈 Statistiken'
+    };
+    return labels[tab] || tab;
+}
+
+function switchToTab(tabName) {
+    // Alle Tabs ausblenden
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Alle Tab-Buttons deaktivieren
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Gewünschten Tab anzeigen
+    const tabContent = document.getElementById(tabName);
+    if (tabContent) {
+        tabContent.classList.add('active');
+    }
+
+    // Gewünschten Tab-Button aktivieren
+    const tabBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (tabBtn) {
+        tabBtn.classList.add('active');
+    }
+
+    // Suchergebnisse schließen
+    searchResults.classList.remove('active');
+    searchInput.value = '';
+}
+
+function updateSelectedResult() {
+    document.querySelectorAll('.search-result-item').forEach((item, index) => {
+        if (index === selectedResultIndex) {
+            item.style.background = 'var(--accent-color)';
+            item.style.color = 'white';
+            item.querySelector('.search-result-title').style.color = 'white';
+            item.querySelector('.search-result-meta').style.color = 'rgba(255, 255, 255, 0.7)';
+        } else {
+            item.style.background = '';
+            item.style.color = '';
+            item.querySelector('.search-result-title').style.color = '';
+            item.querySelector('.search-result-meta').style.color = '';
+        }
+    });
+}
+
+function selectCurrentResult() {
+    const items = searchResults.querySelectorAll('.search-result-item');
+    if (selectedResultIndex >= 0 && selectedResultIndex < items.length) {
+        items[selectedResultIndex].click();
+    }
+}
+
+// Event Listener für Suche
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        performSearch(e.target.value);
+    });
+
+    // Keyboard Navigation (Arrow Up/Down und Enter)
+    searchInput.addEventListener('keydown', (e) => {
+        const items = searchResults.querySelectorAll('.search-result-item');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (selectedResultIndex < items.length - 1) {
+                selectedResultIndex++;
+            } else {
+                selectedResultIndex = 0;
+            }
+            updateSelectedResult();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (selectedResultIndex > 0) {
+                selectedResultIndex--;
+            } else {
+                selectedResultIndex = items.length - 1;
+            }
+            updateSelectedResult();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            selectCurrentResult();
+        } else if (e.key === 'Escape') {
+            searchResults.classList.remove('active');
+            selectedResultIndex = -1;
+        }
+    });
+
+    // Suche schließen wenn man woanders klickt
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-container')) {
+            searchResults.classList.remove('active');
+            selectedResultIndex = -1;
+        }
+    });
+}
+
+function updateLernzeitDisplay() {
+    // Placeholder für Timer Display Update
+    const minutesEl = document.getElementById('timerMinutes');
+    const secondsEl = document.getElementById('timerSeconds');
+    if (minutesEl && secondsEl) {
+        minutesEl.textContent = '25';
+        secondsEl.textContent = '00';
+    }
+}
+
+// ===== PRÜFUNGS-COUNTDOWN FUNCTIONS =====
+function addPruefung() {
+    const subject = document.getElementById('pruefungSubject').value.trim();
+    const name = document.getElementById('pruefungName').value.trim();
+    const date = document.getElementById('pruefungDate').value;
+    const importance = document.getElementById('pruefungImportance').value;
+
+    if (!subject || !name || !date) {
+        console.warn('Bitte alle Felder ausfüllen!');
+        return;
+    }
+
+    const pruefung = {
+        id: Date.now(),
+        subject,
+        name,
+        date,
+        importance,
+        createdAt: new Date().toISOString()
+    };
+
+    appData.pruefungen.push(pruefung);
+    saveData();
+    
+    document.getElementById('pruefungSubject').value = '';
+    document.getElementById('pruefungName').value = '';
+    document.getElementById('pruefungDate').value = '';
+    document.getElementById('pruefungImportance').value = 'medium';
+    
+    renderPruefungen();
+}
+
+function deletePruefung(id) {
+    appData.pruefungen = appData.pruefungen.filter(p => p.id !== id);
+    saveData();
+    renderPruefungen();
+}
+
+function calculateDaysUntil(dateStr) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const examDate = new Date(dateStr);
+    examDate.setHours(0, 0, 0, 0);
+    
+    const timeDiff = examDate - today;
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    
+    return daysDiff;
+}
+
+function renderPruefungen() {
+    const container = document.getElementById('pruefungen-list');
+    if (!container) return;
+    
+    // Sortieren nach Datum
+    const sorted = [...appData.pruefungen].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    if (sorted.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">📭 Keine Prüfungen eingetragen. Mach dich bereit! 💪</div>';
+        return;
+    }
+    
+    container.innerHTML = sorted.map(pruefung => {
+        const daysLeft = calculateDaysUntil(pruefung.date);
+        const dateObj = new Date(pruefung.date);
+        const dateStr = dateObj.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'short' });
+        
+        let daysText = '';
+        let daysColor = '';
+        if (daysLeft < 0) {
+            daysText = `${Math.abs(daysLeft)} Tag${Math.abs(daysLeft) !== 1 ? 'e' : ''} vorbei 😅`;
+            daysColor = '#ef4444';
+        } else if (daysLeft === 0) {
+            daysText = 'HEUTE! 🎯';
+            daysColor = '#ef4444';
+        } else if (daysLeft === 1) {
+            daysText = 'MORGEN! ⚠️';
+            daysColor = '#f59e0b';
+        } else if (daysLeft <= 7) {
+            daysText = `${daysLeft} Tage ⏰`;
+            daysColor = '#f59e0b';
+        } else if (daysLeft <= 30) {
+            daysText = `${daysLeft} Tage 📅`;
+            daysColor = '#3b82f6';
+        } else {
+            daysText = `${daysLeft} Tage 📌`;
+            daysColor = '#10b981';
+        }
+        
+        return `
+            <div class="pruefung-card ${pruefung.importance}">
+                <div class="pruefung-subject">${pruefung.subject}</div>
+                <div class="pruefung-name">${pruefung.name}</div>
+                <div class="pruefung-countdown" style="border-left: 4px solid ${daysColor};">
+                    <div class="pruefung-days">${Math.max(0, daysLeft)}</div>
+                    <div class="pruefung-label">${daysText}</div>
+                </div>
+                <div class="pruefung-date">
+                    📅 ${dateStr}
+                </div>
+                <div class="pruefung-actions">
+                    <button class="pruefung-delete" onclick="deletePruefung(${pruefung.id})">🗑️ Löschen</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 // ===== WINDOW LOAD EVENT =====
 window.addEventListener('load', function() {
     updateStatistics();
     checkAchievements();
     renderDashboard();
     updateLernzeitDisplay();
+    renderPruefungen();
+    setupCalendar();
+    renderCalendarPremium();
+    renderTermine();
+    renderNotes();
+    updateLevelDisplay();
+    
+    // Event Listener für Prüfungen
+    const addPruefungBtn = document.getElementById('addPruefungBtn');
+    if (addPruefungBtn) {
+        addPruefungBtn.addEventListener('click', addPruefung);
+    }
+    
+    // Event Listener für Termine
+    const addTerminBtn = document.getElementById('addTerminBtn');
+    if (addTerminBtn) {
+        addTerminBtn.addEventListener('click', addTermin);
+    }
 });
+
+// ===== LEVEL & XP SYSTEM FUNCTIONS =====
+
+function addXP(amount, reason = 'action') {
+    const oldLevel = appData.level;
+    
+    // Add XP
+    appData.xp += amount;
+    appData.totalXpEarned += amount;
+    
+    // Check for level up
+    const nextLevelXP = getXPForLevel(appData.level + 1);
+    if (appData.xp >= nextLevelXP) {
+        appData.level++;
+        appData.xp -= nextLevelXP;
+        
+        // Show level up popup and confetti
+        showLevelUpPopup(appData.level);
+        triggerConfetti();
+        
+        // Unlock level achievement
+        if (appData.level === 5) {
+            unlockAchievement(10); // Level 5 Achievement
+        } else if (appData.level === 10) {
+            unlockAchievement(11); // Level 10 Achievement
+        } else if (appData.level === 15) {
+            unlockAchievement(12); // Level 15 Achievement
+        }
+    }
+    
+    updateLevelDisplay();
+    saveData();
+}
+
+function unlockAchievement(achievementId) {
+    const achievement = achievementsData.find(a => a.id === achievementId);
+    if (achievement && !achievement.unlocked) {
+        achievement.unlocked = true;
+        addXP(achievement.xpReward, `Achievement: ${achievement.title}`);
+        showAchievementUnlocked(achievement);
+        renderAchievements();
+    }
+}
+
+function showAchievementUnlocked(achievement) {
+    // Create notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        color: #5b4200;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        z-index: 10000;
+        min-width: 300px;
+        animation: slideIn 0.5s ease;
+        font-weight: 700;
+    `;
+    
+    notification.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">${achievement.icon}</div>
+        <div style="font-size: 1.2rem;">🏆 Erfolg freigeschaltet!</div>
+        <div style="font-size: 1.1rem; margin-top: 0.5rem;">${achievement.title}</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">+${achievement.xpReward} XP</div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+function showLevelUpPopup(newLevel) {
+    const popup = document.createElement('div');
+    popup.className = 'level-up-popup';
+    popup.innerHTML = `
+        <h2>🎉 LEVEL UP! 🎉</h2>
+        <div class="new-level">${newLevel}</div>
+        <div class="level-title-new">${levelTitles[newLevel] || 'Champion'}</div>
+        <button class="level-up-close" onclick="this.parentElement.remove()">Weiter</button>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Auto-close after 5 seconds
+    setTimeout(() => {
+        if (popup.parentElement) {
+            popup.remove();
+        }
+    }, 5000);
+}
+
+function triggerConfetti() {
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+    
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#a8e6cf'];
+    
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti confetti-' + (Math.random() > 0.5 ? 'circle' : 'square');
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (2 + Math.random() * 1) + 's';
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            
+            container.appendChild(confetti);
+        }, i * 30);
+    }
+    
+    setTimeout(() => container.remove(), 4000);
+}
+
+function updateLevelDisplay() {
+    // Update level card
+    const userLevelEl = document.getElementById('userLevel');
+    const currentLevelEl = document.getElementById('currentLevel');
+    const currentXPEl = document.getElementById('currentXP');
+    const totalXPEl = document.getElementById('totalXP');
+    const levelTitleEl = document.getElementById('levelTitle');
+    const levelProgressEl = document.getElementById('levelProgress');
+    const nextLevelXPEl = document.getElementById('nextLevelXP');
+    const prevLevelEl = document.getElementById('prevLevel');
+    const nextLevelEl = document.getElementById('nextLevel');
+    
+    const nextLevelXP = getXPForLevel(appData.level + 1);
+    const progressPercent = (appData.xp / nextLevelXP) * 100;
+    
+    if (userLevelEl) userLevelEl.textContent = appData.level;
+    if (currentLevelEl) currentLevelEl.textContent = appData.level;
+    if (currentXPEl) currentXPEl.textContent = appData.xp;
+    if (totalXPEl) totalXPEl.textContent = appData.totalXpEarned + ' XP';
+    if (levelTitleEl) levelTitleEl.textContent = levelTitles[appData.level] || 'Champion';
+    if (levelProgressEl) levelProgressEl.style.width = Math.min(progressPercent, 100) + '%';
+    if (nextLevelXPEl) nextLevelXPEl.textContent = nextLevelXP;
+    if (prevLevelEl) prevLevelEl.textContent = appData.level;
+    if (nextLevelEl) nextLevelEl.textContent = appData.level + 1;
+}
+
+function checkAchievements() {
+    // Achievement: 5 grades
+    if (appData.noten.length >= 5) {
+        unlockAchievement(1);
+    }
+    
+    // Achievement: Grade 1.0
+    if (appData.noten.some(n => n.note <= 1.0)) {
+        unlockAchievement(2);
+    }
+    
+    // Achievement: 10 grades
+    if (appData.noten.length >= 10) {
+        unlockAchievement(3);
+    }
+    
+    // Achievement: Average under 2.5
+    if (appData.noten.length > 0) {
+        const avg = appData.noten.reduce((a, b) => a + b.note, 0) / appData.noten.length;
+        if (avg < 2.5) {
+            unlockAchievement(4);
+        }
+    }
+    
+    // Achievement: 5 notes
+    if (appData.notizen.length >= 5) {
+        unlockAchievement(5);
+    }
+    
+    // Achievement: Learning days 3x
+    const learningDayCount = parseInt(localStorage.getItem('learningDayCount') || '0');
+    if (learningDayCount >= 3) {
+        unlockAchievement(6);
+    }
+    
+    // Achievement: Streak 7 days
+    if (appData.streak >= 7) {
+        unlockAchievement(7);
+    }
+    
+    // Achievement: 10 terms
+    if (appData.termine.length >= 10) {
+        unlockAchievement(8);
+    }
+    
+    // Achievement: 5 exams
+    if (appData.pruefungen.length >= 5) {
+        unlockAchievement(9);
+    }
+}
+
+// ===== NOTIFICATION SYSTEM =====
+function setupNotifications() {
+    // Request permission for notifications
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                appData.notificationsEnabled = true;
+                saveData();
+                showNotification('✅ Benachrichtigungen aktiviert!', 'Du wirst jetzt über kommende Prüfungen benachrichtigt.');
+            }
+        });
+    }
+    
+    // Check for upcoming exams every hour
+    setInterval(checkUpcomingExams, 3600000); // Every hour
+    checkUpcomingExams(); // Check on load
+}
+
+function checkUpcomingExams() {
+    if (!appData.notificationsEnabled || !('Notification' in window)) return;
+    
+    const now = new Date();
+    const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+    
+    appData.pruefungen.forEach(pruefung => {
+        const pruefungDate = new Date(pruefung.datum);
+        const notificationKey = `notified-${pruefung.id}`;
+        
+        // 1 day before
+        if (pruefungDate <= oneDayFromNow && pruefungDate > now && !localStorage.getItem(notificationKey)) {
+            const daysLeft = Math.floor((pruefungDate - now) / (1000 * 60 * 60 * 24));
+            const hoursLeft = Math.floor(((pruefungDate - now) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            showNotification(
+                '🎓 Prüfung in Kürze!',
+                `${pruefung.fach} - ${pruefung.name} steht in ${daysLeft} Tagen und ${hoursLeft} Stunden an!`,
+                { tag: `exam-${pruefung.id}` }
+            );
+            
+            localStorage.setItem(notificationKey, 'true');
+        }
+        
+        // 1 hour before
+        if (pruefungDate <= oneHourFromNow && pruefungDate > now && !localStorage.getItem(`notified-1h-${pruefung.id}`)) {
+            showNotification(
+                '⚠️ Prüfung in 1 Stunde!',
+                `${pruefung.fach} - ${pruefung.name} beginnt gleich!`,
+                { tag: `exam-1h-${pruefung.id}` }
+            );
+            
+            localStorage.setItem(`notified-1h-${pruefung.id}`, 'true');
+        }
+    });
+}
+
+function showNotification(title, body, options = {}) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification(title, {
+            body: body,
+            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" fill="yellow">📚</text></svg>',
+            badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%236d28d9"/></svg>',
+            ...options
+        });
+        
+        // Close notification after 10 seconds
+        setTimeout(() => notification.close(), 10000);
+    }
+}
+

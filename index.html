@@ -26,7 +26,10 @@
                     </div>
                 </div>
                 <div class="header-right">
-                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Suchen...">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Suchen...">
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
                     <button id="exportBtn" class="btn-header" title="Daten exportieren">💾</button>
                     <button id="darkModeBtn" class="btn-dark-mode">🌙</button>
                 </div>
@@ -38,10 +41,10 @@
             <button class="tab-btn active" data-tab="dashboard">📌 Dashboard</button>
             <button class="tab-btn" data-tab="kalender">📆 Kalender</button>
             <button class="tab-btn" data-tab="noten">📊 Noten</button>
+            <button class="tab-btn" data-tab="pruefungen">🎓 Prüfungen</button>
             <button class="tab-btn" data-tab="notizen">📝 Notizen</button>
             <button class="tab-btn" data-tab="lernzeit">⏱️ Lern Zeit</button>
-            <button class="tab-btn" data-tab="rechner">🧮 Rechner</button>
-            <button class="tab-btn" data-tab="statistiken">📈 Statistiken</button>
+            <button class="tab-btn" data-tab="statistiken">📈 Statistiken & Rechner</button>
         </nav>
 
         <!-- Main Content -->
@@ -49,6 +52,35 @@
             <!-- DASHBOARD TAB -->
             <section id="dashboard" class="tab-content active">
                 <h2>📌 Mein Dashboard</h2>
+                
+                <!-- LEVEL & XP SYSTEM -->
+                <div class="level-card card">
+                    <div class="level-header">
+                        <div class="level-info">
+                            <div class="level-badge">
+                                <span class="level-icon">⭐</span>
+                                <span class="level-number" id="userLevel">1</span>
+                            </div>
+                            <div class="level-details">
+                                <h3 class="level-title" id="levelTitle">Schulanfänger</h3>
+                                <p class="level-subtitle">Level <span id="currentLevel">1</span> • <span id="currentXP">0</span> / <span id="nextLevelXP">100</span> XP</p>
+                            </div>
+                        </div>
+                        <div class="xp-display">
+                            <span class="xp-icon">✨</span>
+                            <span class="xp-total" id="totalXP">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="level-progress-container">
+                        <div class="level-progress-bar">
+                            <div class="level-progress-fill" id="levelProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="level-progress-labels">
+                            <span>Level <span id="prevLevel">1</span></span>
+                            <span>Level <span id="nextLevel">2</span></span>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="dashboard-grid">
                     <!-- Zusammenfassung -->
@@ -101,6 +133,19 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Noten-Ziele pro Fach -->
+                    <div class="card dashboard-card">
+                        <h3>📚 Fach-Ziele</h3>
+                        <div class="subject-goals-container">
+                            <div class="goal-input-row">
+                                <input type="text" id="subjectGoalFach" placeholder="Fach (z.B. Deutsch)" class="input" onkeypress="if(event.key==='Enter') addSubjectGoal()">
+                                <input type="number" id="subjectGoalGrade" placeholder="Ziel (1.0-6.0)" min="1" max="6" step="0.1" class="input">
+                                <button id="addSubjectGoalBtn" class="btn btn-small btn-primary" onclick="addSubjectGoal()">➕ Hinzufügen</button>
+                            </div>
+                            <div id="subject-goals-list" class="subject-goals-list"></div>
+                        </div>
+                    </div>
 
                     <!-- Lernsträhne -->
                     <div class="card dashboard-card">
@@ -109,74 +154,127 @@
                             <p class="streak-number">0 🔥</p>
                             <p class="streak-text">Tage in Folge</p>
                         </div>
-                        <button id="streakBtn" class="btn btn-success">✅ Heute gelernt!</button>
+                        <button id="streakBtn" class="btn btn-success" onclick="updateStreak()">✅ Heute gelernt!</button>
+                    </div>
+                </div>
+                
+                <!-- ACHIEVEMENTS SECTION -->
+                <div class="achievements-card card">
+                    <h3>🏆 Meine Erfolge</h3>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Achievements werden per JS eingefügt -->
                     </div>
                 </div>
             </section>
-            <section id="kalender" class="tab-content active">
-                <h2>📆 Schulkalender</h2>
-                <div class="card">
-                    <div class="calendar-header">
-                        <button id="prevMonth" class="btn btn-small">◀ Zurück</button>
-                        <h3 id="monthYear"></h3>
-                        <button id="nextMonth" class="btn btn-small">Weiter ▶</button>
+            
+            <section id="kalender" class="tab-content">
+                <h2>📆 Schulkalender Premium Edition</h2>
+                
+                <!-- PREMIUM CALENDAR CARD -->
+                <div class="card calendar-premium-card">
+                    <div class="calendar-header-premium">
+                        <button id="prevMonth" class="btn-nav btn-nav-prev">
+                            <span class="nav-icon">◀</span>
+                            <span class="nav-text">Zurück</span>
+                        </button>
+                        <div class="month-year-container">
+                            <h3 id="monthYear" class="month-year-display"></h3>
+                            <p class="year-subtitle" id="yearDisplay"></p>
+                        </div>
+                        <button id="nextMonth" class="btn-nav btn-nav-next">
+                            <span class="nav-text">Weiter</span>
+                            <span class="nav-icon">▶</span>
+                        </button>
                     </div>
-                    <div class="calendar-wrapper">
-                        <table class="calendar-table">
-                            <thead>
-                                <tr>
-                                    <th>Mo</th>
-                                    <th>Di</th>
-                                    <th>Mi</th>
-                                    <th>Do</th>
-                                    <th>Fr</th>
-                                    <th>Sa</th>
-                                    <th>So</th>
-                                </tr>
-                            </thead>
-                            <tbody id="calendar-body">
-                            </tbody>
-                        </table>
+
+                    <!-- WEEKDAY HEADER -->
+                    <div class="calendar-weekdays-premium">
+                        <div class="weekday-header">Mo</div>
+                        <div class="weekday-header">Di</div>
+                        <div class="weekday-header">Mi</div>
+                        <div class="weekday-header">Do</div>
+                        <div class="weekday-header">Fr</div>
+                        <div class="weekday-header">Sa</div>
+                        <div class="weekday-header">So</div>
+                    </div>
+
+                    <!-- CALENDAR GRID -->
+                    <div class="calendar-grid-premium" id="calendar-body">
+                    </div>
+
+                    <!-- HOLIDAY INFO -->
+                    <div class="calendar-legend-premium">
+                        <div class="legend-item">
+                            <div class="legend-color holiday"></div>
+                            <span>Feiertag</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color vacation"></div>
+                            <span>Ferien</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color event"></div>
+                            <span>Termin</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3>� Termin für ausgewähltes Datum hinzufügen</h3>
-                    <div class="form-group">
-                        <input type="text" id="selectedDateDisplay" placeholder="Klicke auf einen Tag im Kalender" class="input" readonly>
+                <!-- EVENT INPUT SECTION -->
+                <div class="card calendar-event-card">
+                    <h3>➕ Neuen Termin hinzufügen</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">📅 Datum</label>
+                            <input type="text" id="selectedDateDisplay" placeholder="Klicke auf einen Tag" class="input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">📝 Titel</label>
+                            <input type="text" id="terminInput" placeholder="z.B. Mathetest" class="input">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">⏰ Zeit</label>
+                            <input type="time" id="terminTimeInput" class="input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">🏷️ Typ</label>
+                            <select id="terminTypInput" class="input">
+                                <option value="prüfung">📋 Prüfung</option>
+                                <option value="hausaufgabe">📝 Hausaufgabe</option>
+                                <option value="projekt">🎯 Projekt</option>
+                                <option value="sonstiges">📌 Sonstiges</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="terminInput" placeholder="Termintitel (z.B. Mathetest)" class="input">
-                    </div>
-                    <div class="form-group">
-                        <input type="time" id="terminTimeInput" class="input" placeholder="Zeit">
-                    </div>
-                    <div class="form-group">
-                        <select id="terminTypInput" class="input">
-                            <option value="prüfung">📋 Prüfung</option>
-                            <option value="hausaufgabe">📝 Hausaufgabe</option>
-                            <option value="projekt">🎯 Projekt</option>
-                            <option value="sonstiges">📌 Sonstiges</option>
+                        <label class="form-label">⚡ Priorität</label>
+                        <select id="terminPriorityInput" class="priority-select">
+                            <option value="low">🟢 Niedrig</option>
+                            <option value="medium" selected>🟡 Mittel</option>
+                            <option value="high">🔴 Hoch</option>
                         </select>
                     </div>
-                    <button id="addTerminBtn" class="btn btn-primary">✅ Termin speichern</button>
+                    <button id="addTerminBtn" class="btn btn-primary btn-large">✅ Termin speichern</button>
                 </div>
 
-                <div class="card">
-                    <h3>📌 Ereignisse für ausgewählten Tag</h3>
-                    <div id="calendar-events" class="calendar-events"></div>
+                <!-- UPCOMING EVENTS SECTION -->
+                <div class="card calendar-events-card">
+                    <h3>⏰ Nächste Ereignisse</h3>
+                    <div id="calendar-events" class="events-list-premium"></div>
                 </div>
 
-                <div class="card">
-                    <h3>📋 Alle anstehenden Termine</h3>
-                    <div id="termine-list" class="notes-list"></div>
+                <!-- ALL EVENTS SECTION -->
+                <div class="card calendar-all-events-card">
+                    <h3>📋 Alle Termine</h3>
+                    <div id="termine-list" class="events-table-premium"></div>
                 </div>
             </section>
 
             <!-- NOTEN TAB -->
             <section id="noten" class="tab-content">
                 <h2>📊 Notenverwaltung</h2>
-                <div class="card">
+                <div class="card noten-card">
                     <h3>Note hinzufügen</h3>
                     <div class="form-group">
                         <input type="text" id="fachInput" placeholder="Fach (z.B. Mathematik)" class="input">
@@ -201,10 +299,40 @@
                 <!-- This section is now integrated into the calendar tab -->
             </section>
 
+            <!-- PRÜFUNGS-COUNTDOWN TAB -->
+            <section id="pruefungen" class="tab-content">
+                <h2>🎓 Prüfungs-Countdown</h2>
+                
+                <!-- Neue Prüfung hinzufügen -->
+                <div class="card pruefung-form-card">
+                    <h3>➕ Neue Prüfung eintragen</h3>
+                    <div class="form-group">
+                        <input type="text" id="pruefungSubject" placeholder="Fach (z.B. Mathematik)" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="pruefungName" placeholder="Prüfungsname (z.B. Quali)" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" id="pruefungDate" class="input">
+                    </div>
+                    <div class="form-group">
+                        <select id="pruefungImportance" class="input">
+                            <option value="low">ℹ️ Weniger wichtig</option>
+                            <option value="medium" selected>⭐ Wichtig</option>
+                            <option value="high">🔴 Sehr wichtig</option>
+                        </select>
+                    </div>
+                    <button id="addPruefungBtn" class="btn btn-primary btn-large">✅ Prüfung speichern</button>
+                </div>
+
+                <!-- Aktive Prüfungen mit Countdown -->
+                <div id="pruefungen-list" class="pruefungen-grid"></div>
+            </section>
+
             <!-- NOTIZEN TAB -->
             <section id="notizen" class="tab-content">
                 <h2>📝 Notizen & Notizen</h2>
-                <div class="card">
+                <div class="card notizen-card">
                     <h3>Neue Notiz</h3>
                     <div class="form-group">
                         <input type="text" id="notizTitelInput" placeholder="Titel" class="input">
@@ -224,38 +352,98 @@
             <!-- STATISTIKEN TAB -->
             <section id="statistiken" class="tab-content">
                 <h2>📈 Statistiken & Erfolge</h2>
-                <div class="card">
-                    <h3>Notendurchschnitt pro Fach</h3>
-                    <canvas id="notesChart" width="400" height="200"></canvas>
-                </div>
                 
-                <div class="card">
-                    <h3>Zusammenfassung</h3>
-                    <div id="stats-summary" class="stats-grid">
-                        <div class="stat-box">
-                            <p class="stat-label">Durchschnittsnote</p>
-                            <p class="stat-value" id="avgGrade">-</p>
+                <!-- Grid Layout für Statistik & Rechner nebeneinander -->
+                <div class="stats-rechner-grid">
+                    <!-- STATISTIK SEKTION -->
+                    <div class="stats-section">
+                        <div class="card stats-card">
+                            <h3>Notendurchschnitt pro Fach</h3>
+                            <canvas id="notesChart" width="400" height="200"></canvas>
                         </div>
-                        <div class="stat-box">
-                            <p class="stat-label">Beste Note</p>
-                            <p class="stat-value" id="bestGrade">-</p>
+                        
+                        <div class="card">
+                            <h3>Zusammenfassung</h3>
+                            <div id="stats-summary" class="stats-grid">
+                                <div class="stat-box">
+                                    <p class="stat-label">Durchschnittsnote</p>
+                                    <p class="stat-value" id="avgGrade">-</p>
+                                </div>
+                                <div class="stat-box">
+                                    <p class="stat-label">Beste Note</p>
+                                    <p class="stat-value" id="bestGrade">-</p>
+                                </div>
+                                <div class="stat-box">
+                                    <p class="stat-label">Schlechteste Note</p>
+                                    <p class="stat-value" id="worstGrade">-</p>
+                                </div>
+                                <div class="stat-box">
+                                    <p class="stat-label">Noten gesamt</p>
+                                    <p class="stat-value" id="totalGrades">0</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-box">
-                            <p class="stat-label">Schlechteste Note</p>
-                            <p class="stat-value" id="worstGrade">-</p>
-                        </div>
-                        <div class="stat-box">
-                            <p class="stat-label">Noten gesamt</p>
-                            <p class="stat-value" id="totalGrades">0</p>
+
+                        <div class="card">
+                            <h3>🏆 Deine Erfolge</h3>
+                            <button id="learningDayBtn" class="btn btn-success">🚀 Lerntag aktivieren!</button>
+                            <p id="learning-day-status" class="status-message"></p>
+                            <div id="achievements-list" class="achievements-grid"></div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <h3>🏆 Deine Erfolge</h3>
-                    <button id="learningDayBtn" class="btn btn-success">🚀 Lerntag aktivieren!</button>
-                    <p id="learning-day-status" class="status-message"></p>
-                    <div id="achievements-list" class="achievements-grid"></div>
+                    <!-- RECHNER SEKTION -->
+                    <div class="rechner-section">
+                        <h3 style="text-align: center; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--accent-color), var(--blue-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: 'Poppins', sans-serif; font-weight: 900;">🧮 Taschenrechner</h3>
+                        <div class="card rechner-card calculator-card" style="padding: 0; display: flex; justify-content: center; background: linear-gradient(135deg, rgba(109, 40, 217, 0.08) 0%, rgba(59, 130, 246, 0.08) 50%, rgba(6, 182, 212, 0.08) 100%);">
+                            <div class="calculator">
+                                <div class="calc-display">
+                                    <input type="text" id="calcDisplay" readonly placeholder="0">
+                                </div>
+                                <div class="calc-buttons">
+                                    <!-- Reihe 1: Wissenschaftliche Funktionen -->
+                                    <button class="calc-btn calc-sci" onclick="addPi()">π</button>
+                                    <button class="calc-btn calc-sci" onclick="calculateSquareRoot()">√</button>
+                                    <button class="calc-btn calc-sci" onclick="calculateSquare()">x²</button>
+                                    <button class="calc-btn calc-sci" onclick="toggleSign()">±</button>
+                                    
+                                    <!-- Reihe 2: Zahlen & Operationen -->
+                                    <button class="calc-btn" onclick="addToDisplay('7')">7</button>
+                                    <button class="calc-btn" onclick="addToDisplay('8')">8</button>
+                                    <button class="calc-btn" onclick="addToDisplay('9')">9</button>
+                                    <button class="calc-btn calc-op" onclick="addToDisplay('/')">/</button>
+                                    
+                                    <!-- Reihe 3 -->
+                                    <button class="calc-btn" onclick="addToDisplay('4')">4</button>
+                                    <button class="calc-btn" onclick="addToDisplay('5')">5</button>
+                                    <button class="calc-btn" onclick="addToDisplay('6')">6</button>
+                                    <button class="calc-btn calc-op" onclick="addToDisplay('*')">×</button>
+                                    
+                                    <!-- Reihe 4 -->
+                                    <button class="calc-btn" onclick="addToDisplay('1')">1</button>
+                                    <button class="calc-btn" onclick="addToDisplay('2')">2</button>
+                                    <button class="calc-btn" onclick="addToDisplay('3')">3</button>
+                                    <button class="calc-btn calc-op" onclick="addToDisplay('-')">−</button>
+                                    
+                                    <!-- Reihe 5 -->
+                                    <button class="calc-btn" onclick="addToDisplay('0')">0</button>
+                                    <button class="calc-btn" onclick="addToDisplay('.')">.</button>
+                                    <button class="calc-btn calc-op" onclick="calculatePercent()">%</button>
+                                    <button class="calc-btn calc-op" onclick="addToDisplay('+')">+</button>
+                                    
+                                    <!-- Reihe 6: Trigonometrie & Power -->
+                                    <button class="calc-btn calc-sci" onclick="calculateSin()">sin</button>
+                                    <button class="calc-btn calc-sci" onclick="calculateCos()">cos</button>
+                                    <button class="calc-btn calc-sci" onclick="calculateTan()">tan</button>
+                                    <button class="calc-btn calc-sci" onclick="calculatePower()">x^y</button>
+                                    
+                                    <!-- Reihe 7: Result & Clear -->
+                                    <button class="calc-btn calc-equals" onclick="calculateResult()" style="grid-column: 1 / 3;">RESULT</button>
+                                    <button class="calc-btn calc-clear" onclick="clearDisplay()" style="grid-column: 3 / 5;">DELETE</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -270,7 +458,7 @@
             <!-- LERN ZEIT TAB -->
             <section id="lernzeit" class="tab-content">
                 <h2>⏱️ Lern Zeit</h2>
-                <div class="card pomodoro-card">
+                <div class="card lernzeit-card pomodoro-card">
                     <div class="lernzeit-settings">
                         <div class="setting-group">
                             <label for="focusTimeInput">Fokus-Zeit (Minuten):</label>
@@ -297,63 +485,6 @@
                     </div>
                     <div class="pomodoro-stats">
                         <p>Fokus-Sessions: <strong id="pomodoroCount">0</strong></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- RECHNER TAB -->
-            <section id="rechner" class="tab-content">
-                <h2>🧮 Wissenschaftlicher Taschenrechner</h2>
-                <div class="card calculator-card">
-                    <div class="calculator">
-                        <div class="calc-display">
-                            <input type="text" id="calcDisplay" readonly placeholder="0">
-                        </div>
-                        <div class="calc-buttons">
-                            <!-- Reihe 1: Wissenschaftliche Funktionen -->
-                            <button class="calc-btn calc-sci" onclick="addPi()">π</button>
-                            <button class="calc-btn calc-sci" onclick="calculateSquareRoot()">√</button>
-                            <button class="calc-btn calc-sci" onclick="calculateSquare()">x²</button>
-                            <button class="calc-btn calc-sci" onclick="toggleSign()">±</button>
-                            
-                            <!-- Reihe 2: Zahlen & Operationen -->
-                            <button class="calc-btn" onclick="addToDisplay('7')">7</button>
-                            <button class="calc-btn" onclick="addToDisplay('8')">8</button>
-                            <button class="calc-btn" onclick="addToDisplay('9')">9</button>
-                            <button class="calc-btn calc-op" onclick="addToDisplay('/')">/</button>
-                            
-                            <!-- Reihe 3 -->
-                            <button class="calc-btn" onclick="addToDisplay('4')">4</button>
-                            <button class="calc-btn" onclick="addToDisplay('5')">5</button>
-                            <button class="calc-btn" onclick="addToDisplay('6')">6</button>
-                            <button class="calc-btn calc-op" onclick="addToDisplay('*')">×</button>
-                            
-                            <!-- Reihe 4 -->
-                            <button class="calc-btn" onclick="addToDisplay('1')">1</button>
-                            <button class="calc-btn" onclick="addToDisplay('2')">2</button>
-                            <button class="calc-btn" onclick="addToDisplay('3')">3</button>
-                            <button class="calc-btn calc-op" onclick="addToDisplay('-')">−</button>
-                            
-                            <!-- Reihe 5 -->
-                            <button class="calc-btn" onclick="addToDisplay('0')">0</button>
-                            <button class="calc-btn" onclick="addToDisplay('.')">.</button>
-                            <button class="calc-btn calc-op" onclick="calculatePercent()">%</button>
-                            <button class="calc-btn calc-op" onclick="addToDisplay('+')">+</button>
-                            
-                            <!-- Reihe 6: Trigonometrie & Power -->
-                            <button class="calc-btn calc-sci" onclick="calculateSin()">sin</button>
-                            <button class="calc-btn calc-sci" onclick="calculateCos()">cos</button>
-                            <button class="calc-btn calc-sci" onclick="calculateTan()">tan</button>
-                            <button class="calc-btn calc-sci" onclick="calculatePower()">x^y</button>
-                            
-                            <!-- Reihe 7: Result & Clear -->
-                            <button class="calc-btn calc-equals" onclick="calculateResult()" style="grid-column: 1 / 3;">RESULT</button>
-                            <button class="calc-btn calc-clear" onclick="backspace()">⌫</button>
-                            <button class="calc-btn calc-clear" onclick="clearDisplay()" style="grid-column: 3 / -1;">C</button>
-                        </div>
-                    </div>
-                    <div class="calc-info">
-                        <p><strong>Tasten:</strong> π • √ • x² • sin • cos • tan • x^y • % • ±</p>
                     </div>
                 </div>
             </section>
